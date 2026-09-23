@@ -1,0 +1,9 @@
+# Install a CUDA-compatible PyTorch build separately for the target GPU.
+numpy>=1.26,<2
+scikit-learn>=1.4,<2
+transformers==4.44.2
+PyYAML>=6,<7
+einops>=0.7,<1
+matplotlib>=3.8,<4
+requests>=2.31,<3
+Pillow>=10,<12

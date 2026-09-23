@@ -1,0 +1,27 @@
+# Contest inputs and source documents stay local.
+E题数据/
+*.docx
+~$*
+
+# Local Python environment, model downloads, runtime files.
+.venv/
+EMOE_repro/.venv/
+EMOE_repro/hf_cache/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Downloaded upstream P-RMF code is fetched at a pinned revision.
+EMOE_repro/P_RMF_upstream/
+
+# Raw outputs include checkpoints and per-sample contest predictions.
+EMOE_repro/results/
+*.pt
+*.pth
+*.ckpt
+
+# Editors / local notebooks.
+.vscode/
+.idea/
+.ipynb_checkpoints/
+

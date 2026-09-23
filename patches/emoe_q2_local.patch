@@ -1,0 +1,194 @@
+diff --git a/trains/singleTask/model/emoe.py b/trains/singleTask/model/emoe.py
+index 7478443..36a9658 100644
+--- a/trains/singleTask/model/emoe.py
++++ b/trains/singleTask/model/emoe.py
+@@ -1,7 +1,6 @@
+ import torch
+ import torch.nn as nn
+ import torch.nn.functional as F
+-from ...subNets import BertTextEncoder
+ from ...subNets.transformers_encoder.transformer import TransformerEncoder
+ from ...singleTask.model.router import router
+ 
+@@ -9,6 +8,9 @@ class EMOE(nn.Module):
+     def __init__(self, args):
+         super(EMOE, self).__init__()
+         if args.use_bert:
++            # The E-question smoke run uses supplied text embeddings and does
++            # not need transformers/BERT installed or loaded on the GPU.
++            from ...subNets.BertTextEncoder import BertTextEncoder
+             self.text_model = BertTextEncoder(use_finetune=args.use_finetune, transformers=args.transformers,
+                                               pretrained=args.pretrained)
+         self.use_bert = args.use_bert
+@@ -73,7 +75,15 @@ class EMOE(nn.Module):
+             self.proj2_c = nn.Linear(self.d_l*3, self.d_l*3)
+             self.out_layer_c = nn.Linear(self.d_l*3, output_dim)
+ 
+-        self.Router = router(self.orig_d_l * self.len_l + self.orig_d_a * self.len_l + self.orig_d_v * self.len_l, 3, self.args.temperature)
++        self.Router = router(
++            self.orig_d_l * self.len_l + self.orig_d_a * self.len_l + self.orig_d_v * self.len_l,
++            3,
++            self.args.temperature,
++            hidden_dim=getattr(self.args, 'router_hidden_dim', None),
++        )
++        self.missing_l = nn.Parameter(torch.zeros(self.orig_d_l))
++        self.missing_v = nn.Parameter(torch.zeros(self.orig_d_v))
++        self.missing_a = nn.Parameter(torch.zeros(self.orig_d_a))
+         self.transfer_a_ali = nn.Linear(self.len_a, self.len_l)
+         self.transfer_v_ali = nn.Linear(self.len_v, self.len_l)
+ 
+@@ -100,9 +110,28 @@ class EMOE(nn.Module):
+     def get_net(self, name):
+         return getattr(self, name)
+ 
+-    def forward(self, text, audio, video):
++    def forward(self, text, audio, video, observed_mask=None, valid_lengths=None,
++                zero_padding=False, pool_valid=False, coverage_beta=0.0):
+         if self.use_bert:
+             text = self.text_model(text)
++        if (zero_padding or pool_valid or coverage_beta) and valid_lengths is None:
++            raise ValueError("valid_lengths is required for the optional E-question refinements")
++        if valid_lengths is not None:
++            valid_lengths = valid_lengths.to(device=text.device, dtype=torch.long)
++        if zero_padding:
++            positions = torch.arange(text.shape[1], device=text.device)[None, :]
++            valid = positions < valid_lengths[:, None]
++            text = text * valid[:, :, None]
++            audio = audio * valid[:, :, None]
++            video = video * valid[:, :, None]
++        missing_rate = None
++        if observed_mask is not None:
++            # observed_mask: B x 3 x 50 in the original L, V, A order.
++            mask = observed_mask.to(device=text.device, dtype=torch.bool)
++            text = torch.where(mask[:, 0, :, None], text, self.missing_l.to(text.dtype))
++            video = torch.where(mask[:, 1, :, None], video, self.missing_v.to(video.dtype))
++            audio = torch.where(mask[:, 2, :, None], audio, self.missing_a.to(audio.dtype))
++            missing_rate = 1.0 - mask.float().mean(dim=2)
+         x_l = F.dropout(text.transpose(1, 2), p=self.text_dropout, training=self.training)
+         x_a = audio.transpose(1, 2)
+         x_v = video.transpose(1, 2)
+@@ -113,7 +142,16 @@ class EMOE(nn.Module):
+             m_i = torch.cat((text, video_, audio_), dim=2)
+         else:
+             m_i = torch.cat((text, video, audio), dim=2)
+-        m_w = self.Router(m_i)
++        m_w = self.Router(m_i, missing_rate)
++        if coverage_beta:
++            if observed_mask is None:
++                raise ValueError("coverage bias requires observed_mask")
++            positions = torch.arange(text.shape[1], device=text.device)[None, :]
++            content = (positions >= 1) & (positions < valid_lengths[:, None] - 1)
++            observed_content = observed_mask.bool() & content[:, None, :]
++            coverage = observed_content.float().sum(dim=2) / content.sum(dim=1).clamp_min(1)[:, None]
++            m_w = F.softmax(torch.log(m_w.clamp_min(1e-8)) +
++                            float(coverage_beta) * torch.log(coverage.clamp_min(1e-3)), dim=1)
+ 
+         proj_x_l = x_l if self.orig_d_l == self.d_l else self.proj_l(x_l)
+         proj_x_a = x_a if self.orig_d_a == self.d_a else self.proj_a(x_a)
+@@ -130,15 +168,27 @@ class EMOE(nn.Module):
+         c_l_att = self.self_attentions_l(c_l)
+         if type(c_l_att) == tuple:
+             c_l_att = c_l_att[0]
+-        c_l_att = c_l_att[-1]
++        if pool_valid:
++            index = (valid_lengths - self.args.conv1d_kernel_size_l).clamp(0, c_l_att.shape[0] - 1)
++            c_l_att = c_l_att[index, torch.arange(text.shape[0], device=text.device)]
++        else:
++            c_l_att = c_l_att[-1]
+         c_v_att = self.self_attentions_v(c_v)
+         if type(c_v_att) == tuple:
+             c_v_att = c_v_att[0]
+-        c_v_att = c_v_att[-1]
++        if pool_valid:
++            index = (valid_lengths - self.args.conv1d_kernel_size_v).clamp(0, c_v_att.shape[0] - 1)
++            c_v_att = c_v_att[index, torch.arange(text.shape[0], device=text.device)]
++        else:
++            c_v_att = c_v_att[-1]
+         c_a_att = self.self_attentions_a(c_a)
+         if type(c_a_att) == tuple:
+             c_a_att = c_a_att[0]
+-        c_a_att = c_a_att[-1]
++        if pool_valid:
++            index = (valid_lengths - self.args.conv1d_kernel_size_a).clamp(0, c_a_att.shape[0] - 1)
++            c_a_att = c_a_att[index, torch.arange(text.shape[0], device=text.device)]
++        else:
++            c_a_att = c_a_att[-1]
+ 
+         l_proj = self.proj2_l(
+             F.dropout(F.relu(self.proj1_l(c_l_att), inplace=True), p=self.output_dropout,
+@@ -187,4 +237,4 @@ class EMOE(nn.Module):
+             'a_proj': a_proj,
+             'c_fea': c_fusion,
+         }
+-        return res
+\ No newline at end of file
++        return res
+diff --git a/trains/singleTask/model/router.py b/trains/singleTask/model/router.py
+index 7d0768b..eb95a12 100644
+--- a/trains/singleTask/model/router.py
++++ b/trains/singleTask/model/router.py
+@@ -3,14 +3,21 @@ import torch.nn as nn
+ import torch.nn.functional as F
+ 
+ class router(nn.Module):
+-    def __init__(self, dim, channel_num, t):
++    def __init__(self, dim, channel_num, t, hidden_dim=None):
+         super().__init__()
+-        self.l1 = nn.Linear(dim, int(dim/8))
+-        self.l2 = nn.Linear(int(dim/8), channel_num)
++        # Keep the published width by default. A smaller width lets the
++        # original flattened-input router run on a 16 GB GPU.
++        width = int(dim / 8) if hidden_dim is None else int(hidden_dim)
++        self.l1 = nn.Linear(dim, width)
++        self.l2 = nn.Linear(width, channel_num)
++        self.missing_bias = nn.Linear(channel_num, channel_num, bias=False)
++        nn.init.zeros_(self.missing_bias.weight)
+         self.t = t
+         
+-    def forward(self, x):
++    def forward(self, x, missing_rate=None):
+         x = x.view(x.shape[0], -1)
+         x = self.l2(F.relu(F.normalize(self.l1(x), p=2, dim=1)))/self.t
++        if missing_rate is not None:
++            x = x + self.missing_bias(missing_rate.float()).to(x.dtype)
+         output = torch.softmax(x, dim=1)
+-        return output
+\ No newline at end of file
++        return output
+diff --git a/trains/subNets/__init__.py b/trains/subNets/__init__.py
+index 8e64b6a..202e4ba 100644
+--- a/trains/subNets/__init__.py
++++ b/trains/subNets/__init__.py
+@@ -1,2 +1,8 @@
+-from .BertTextEncoder import BertTextEncoder
+ from .AlignNets import AlignSubNet
++
++
++def __getattr__(name):
++    if name == 'BertTextEncoder':
++        from .BertTextEncoder import BertTextEncoder
++        return BertTextEncoder
++    raise AttributeError(name)
+diff --git a/trains/utils/functions.py b/trains/utils/functions.py
+index b596e0e..6a6d0d3 100644
+--- a/trains/utils/functions.py
++++ b/trains/utils/functions.py
+@@ -1,7 +1,10 @@
+ import torch
+ import numpy as np
+ import random
+-import pynvml
++try:
++    import pynvml
++except ImportError:
++    pynvml = None  # The direct smoke run does not use GPU auto-selection.
+ import logging
+ 
+ 
+@@ -64,4 +67,4 @@ def entropy_balance(probs):
+     probs = torch.clamp(probs, min=1e-9)
+     N = probs.size(1)
+     entropy = N * torch.sum(probs * torch.log(probs), dim=1)
+-    return torch.mean(entropy)
+\ No newline at end of file
++    return torch.mean(entropy)

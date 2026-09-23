@@ -1,0 +1,5 @@
+[submodule "EMOE_source"]
+	path = EMOE_source
+	url = https://github.com/fuyyyyy/EMOE.git
+	ignore = dirty
+
