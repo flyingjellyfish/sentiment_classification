@@ -1,0 +1,1204 @@
+
+
+===== PAGE 1 =====
+Enhance-then-Balance Modality Collaboration for Robust Multimodal
+Sentiment Analysis
+KangHe1,2,YuzheDing1,XinrongWang1,FeiLi1,ChongTeng1,DonghongJi1*
+1KeyLaboratoryofAerospaceInformationSecurityandTrustedComputing,MinistryofEducation,
+SchoolofCyberScienceandEngineering,WuhanUniversity.
+2ShanghaiInnovationInstitute
+{hekang0225,yuzheding,dhji}@whu.edu.cn
+Abstract Modality Features Data noise Modality Compensate
+Dominant！ Noise Data! Modality Modality
+Multimodal sentiment analysis (MSA) integrates het- Text Audio Disentanglement Compensating
+erogeneous text, audio, and visual signals to infer hu- modality modality Stage I
+man emotions. While recent approaches leverage cross-
+modal complementarity, they often struggle to fully uti-
+Modality Modality
+lize weaker modalities. In practice, dominant modalities Coordination Stage II Trusting
+tend to overshadow non-verbal ones, inducing modality Modality
+Imbalance
+competition and limiting overall contributions. This im- Noise!
+balance degrades fusion performance and robustness un-
+Visual
+der noisy or missing modalities. To address this, we modality Energy-based Modality trust
+gradient Flow Distillation
+propose a novel model, Enhance-then-Balance Modality
+(a) Modality Representation Space (b) Our two-stage Method Collaborationframework(EBMC).EBMCimprovesrepre-
+sentation quality via semantic disentanglement and cross- Figure1. Illustrationofmodalityimbalance: texttendstodomi-
+modal enhancement, strengthening weaker modalities. To nate learning while weaker modalities are easily suppressed and
+preventdominantmodalitiesfromoverwhelmingothers,an affected by noisy samples. Our two-stage framework first per-
+Energy-guidedModalityCoordinationmechanismachieves formsmodalitydisentanglementandcompensation(StageI),then
+implicit gradient rebalancing via a differentiable equilib- applies an energy-based gradient flow for modality coordination
+andsample-awarereliabilityfortrusting(StageII),leadingtobal-
+rium objective. Furthermore, Instance-aware Modality
+ancedmultimodaloptimizationandensurerobustness.
+TrustDistillationestimatessample-levelreliabilitytoadap-
+tively modulate fusion weights, ensuring robustness. Ex-
+data [1, 19, 62], MSA has shown promise in applications
+tensiveexperimentsdemonstratethatEBMCachievesstate-
+suchasintelligenthuman–computerinteraction[8,67]and
+of-the-art or competitive results and maintains strong per-
+mentalhealthmonitoring[63]. However, duetotheinher-
+formance under missing-modality settings. Our codes are
+entheterogeneityacrossmodalitiesandtheirunequalrelia-
+availableathttps://github.com/kangverse/EBMC.
+bility[13,35,53],achievingrobustsentimentanalysisata
+near-humancognitivelevelremainschallenging.
+1.Introduction Existingresearchhasmadesubstantialprogressinmul-
+timodalrepresentationlearningandfusion. Early[38,58],
+Multimodal sentiment analysis (MSA) aims to capture the
+late [17, 56, 69], and hybrid fusion strategies [27, 33, 66]
+complex patterns of human emotional expression by in-
+attempt to aggregate information at different stages of the
+tegrating information from text, audio, and visual sig-
+pipeline. Meanwhile, modality semantic disentanglement
+nals [12, 16, 38, 58, 60]. Compared with unimodal ap-
+methods[26,48]isolatesharedandmodality-specificcom-
+proaches [47], multimodal learning can exploit comple-
+ponents, allowing models to better characterize the contri-
+mentary cues across modalities, enabling more nuanced
+bution of each modality to emotion expression. These ad-
+and robust emotion understanding in real-world scenar-
+vancesimprovefeatureexpressivenessandcross-modalin-
+ios[17,21].Withthewidespreadavailabilityofmultimodal
+teractiontosomeextent. Nevertheless,mostexistingmeth-
+*Correspondingauthor ods implicitly assume that all modalities contribute in a
+6202
+rpA
+91
+]LC.sc[
+2v81521.4062:viXra
+
+===== PAGE 2 =====
+balanced and reliable manner, and therefore offer limited • We design an instance-aware modality trust distillation
+treatmentofmodalityimbalanceandrobustness. (IMTD)modulethatestimatessample-levelmodalityre-
+Recent multimodal learning systems face a persistent liability and adaptively modulates fusion weights, im-
+challenge: theexpressivepowerandgradientcontributions provingrobustnessundernoisyormissingmodalities.
+of different modalities are inherently imbalanced. Prior • Extensive experiments on MOSI, MOSEI, and IEMO-
+work [9, 13, 49] shows that text consistently dominates CAP demonstrate superior or comparable performance.
+prediction, while audio and visual signals remain under- We further validate EBMC on ERC tasks and under
+exploited due to weaker or noisier emotional cues. As il- modality-missingscenarios,confirmingitseffectiveness.
+lustratedinFig.1(a), weakermodalitiesaremorevulnera-
+bletonoisedata,sparsecues,andmissingsignals,making 2.Relatedworks
+them difficult to optimize and easily overshadowed during
+MultimodalSentimentAnalysis. MultimodalSentiment
+training. Thisimbalancefurtherinducesmodalitycompeti-
+Analysis(MSA)integratestextual,acoustic,andvisualcues
+tion[10,13,18,35]:dominantmodalitiesaccumulatelarger
+tocapturericheraffectiveinformation.Existingapproaches
+gradients and reinforce their own representations, while
+primarily fall into two directions: representation learning
+weaker modalities receive insufficient updates. Over time,
+and multimodal fusion. Representation learning methods
+thiscreatesa“Mattheweffect”whereweakmodalitiesbe-
+focusondisentanglingsharedandmodality-specificseman-
+come increasingly marginalized, especially under noisy or
+tics,suchasMISA[17],aswellasextensionsusingmulti-
+real-worldconditions.
+modal distillation [26] and contrastive learning [56]. Fu-
+To address these challenges, we propose a robust
+sionapproachesexploremoreadaptivestrategies,including
+Enhance-then-Balance Modality Collaboration framework
+attention-based[39,40], graph-based[3,55], gating-based
+(EBMC) with a two-stage design in Fig. 1(b). Stage I en-
+[66], and hierarchical models [55]. Recent work [11, 27]
+hances unimodal representations: Modality Semantic Dis-
+further enhance modality alignment prior to fusion. Al-
+entanglement (MSD) disentangles shared/specific seman-
+though effective, these methods often overlook modality
+tics,andCross-modalComplementaryEnhancement(CCE)
+imbalanceandstruggleundernoisyormissingmodalities.
+reinforces weak modalities through cross-modal comple-
+mentary cues. Stage II then balances modality contribu- ImbalancedMultimodalLearning. Modalityimbalance
+tions: Energy-guided Modality Coordination (EMC) mod- occurswhendominantmodalitiesovershadowweakerones
+ule introduces an energy-based coordination mechanism during joint training [5, 18]. To alleviate this, prior works
+that aligns modality optimization dynamics, and Instance- dynamicallyadjustlearningratesorgradientsacrossmodal-
+aware Modality Trust Distillation (IMTD) module further itiesbasedonlosssignalsorlearningdynamics[35,49,53].
+estimatesmodalityreliabilityfromprobabilisticteachersig- Other approaches redesign the objective to curb domi-
+nalstoadaptivelyadjustfusionweights. nant modalities or boost weaker ones, including Fisher-
+information regularization [20], decoupled fusion streams
+Weconductextensiveexperimentsonthreewidelyused
+[5],detachedunimodalencoderswithcontrastiveobjectives
+benchmarks: CMU-MOSI,CMU-MOSEI,andIEMOCAP.
+[10], andprototype-basedrebalancing[9]. Whileeffective
+EBMC achieves superior or highly competitive perfor-
+at the optimization level, these methods offer limited se-
+mance across all datasets. Given the close relationship
+manticenhancementforweakermodalities.
+between MSA and emotion recognition in conversations
+(ERC) [22], we further transfer EBMC to ERC and ob- Robust Multimodal Learning. Robust learning targets
+serve consistent gains, demonstrating its generalizability. performance stability against modality noise, degrada-
+Inaddition,experimentsundermodality-missingandintra- tion, and missingness. Uncertainty modeling meth-
+modalitymissingnessscenarios(Sec.4.4)showthatEBMC ods, including hyperdimensional uncertainty quantifica-
+suffers substantially smaller performance degradation than tion [4] and aleatoric-guided fusion [15], improve confi-
+existingbaselines,confirmingitsrobustnessinmorerealis- dence calibration and noise robustness, while prototype-
+tic, imperfect multimodal environments. The main contri- basedupdatingstrategiesfurthermitigateintra-modalvari-
+butionsaresummarizedasfollows: ation [25]. To handle missing modalities, recent works
+• Weintroduceaweak-modalityenhancementmechanism adopt self-distillation or cross-modal reconstruction [23],
+thatdisentanglesshared/specificsemanticsandperforms shared–specificrepresentationlearning[21],orprompting-
+cross-modalcompensationtostrengthenweakmodalities basedalignment[52]. Robustnessisalsoenhancedthrough
+andimproveemotiondiscrimination. multi-scaleattentionfusion[31,42]andtext-centricadver-
+• To mitigate modality competition, we present the first sarial prompting [43]. In contrast, EBMC embeds robust-
+EBM-inspiredmodalitycoordinationmechanismthatre- ness directly into the core learning process by adaptively
+balances modalities via energy potentials and gradient- suppressing noisy modalities and enhancing cross-modal
+flowdynamics. complementarityforstableandreliableperformance.
+
+===== PAGE 3 =====
+3.Methodology L =L +λ L +λ L , (5)
+MSD inv 1 dis 2 uni
+3.1.Preliminaries
+where λ and λ are trade-off hyperparameters. By dis-
+1 2
+InMSAtask,theinputcomprisesasetofmodalitiesM = entanglingmodalityrepresentationsinthisway,MSDsup-
+{l,v,a} corresponding to text, visual, and audio signals. presses semantic interference and provides clean, control-
+Each modality is encoded as a feature sequence X ∈ lablefeaturesforsubsequentcross-modalcollaboration.
+m
+RTm×dm,whereT
+m
+isthesequencelengthandd
+m
+thefea-
+3.3.Cross-modalComplementaryEnhancement
+turedimension. GivenmultimodalinputsX ,theob-
+mm∈M
+jectiveistopredictthesentimentcategoryorintensity. As Although MSD preserves modality-specific information,
+illustrated in Fig. 2, our framework EBMC adopts a two- thetextmodalitystilltendstodominatesemanticdiscrimi-
+stage design: MSD (Sec. 3.2) and CCE (Sec. 3.3) first en- nation,whilevisualandaudiomodalitiesoftenencodesub-
+hanceweakmodalityrepresentationswhilepreservinguni- tleremotionalcues. Tobetterleveragetheseweakermodal-
+modal predictive capability, and EMC (Sec. 3.4) together ities, we introduce the Cross-modal Complementary En-
+withIMTD(Sec.3.5)thenmitigatesmodalitycompetition hancement (CCE) module, which enriches each modality
+andstrengthensrobustness. by incorporating complementary shared and specific com-
+ponentsfromothermodalities.
+3.2.ModalitySemanticDisentangle
+Concretely, formodalitym, CCEtakesitsowncompo-
+Directly fusing raw modality features often introduces se- nents (zc ,zs ) together with the shared and specific com-
+m m
+manticinterferenceandallowsdominantmodalitiestoover- ponents from the remaining modalities (zc ,zs ), and
+−m −m
+shadow weaker ones, limiting the contribution of non- feedsthemintoalightweightenhancementnetworkG to
+m
+dominant modalities [9, 10, 53]. To enable effective mul- generateenhancedfeatures:
+timodal fusion while preserving unimodal predictive capa-
+bility, we first perform semantic disentanglement for each z˜ =G (zc ,zc ,zs ,ϵ), (6)
+m m m −m −m
+modality. Specifically, the representation of each modal-
+ity z is decomposed into a shared component zc and a whereϵisanoptionalstochasticperturbationthatincreases
+m m
+modality-specificcomponentzs : feature diversity. The training objective is designed to en-
+m
+force semantic consistency and maintain downstream pre-
+zc =Dc (z ), zs =Ds (z ), (1)
+m m m m m m dictivecorrectness:
+whereD m c andD m s arelightweightMLPsub-networksthat L =E∥z˜ −z ∥2+γℓ(f(z˜ ,z ),y). (7)
+CCE m m 2 m −m
+extractcross-modalsharedsemanticsandmodality-specific
+information(e.g., prosodyorfacialexpressiondetails). To where f(·) denotes the downstream prediction head and γ
+ensureclearfunctionalseparationbetweensharedandspe- balancesthetwoterms. Thereconstructiontermpreserves
+cificcomponents,multipleconstraintsareintroduced.First, theoriginalsemanticstructureofz ,whilethetasklossen-
+m
+invariantalignmentensuresthatsharedcomponentsacross sures that the enhanced feature remains discriminative for
+modalities are close in the semantic space, formulated via the target task. In this way, CCE effectively amplifies the
+anInfoNCE[34]contrastiveloss: contributionofweakermodalitiesandprovidesmoreinfor-
+L =− (cid:88) log exp(sin(z i c,z a c gg )/τ) . (2) mativerepresentationsforsubsequentEMCmodule.
+inv (cid:80) exp(sin(zc,zc)/τ)
+i k i k 3.4.Energy-guidedModalityCoordination
+Second, to avoid redundancy among modality-specific To further address modality competition, we reinterpret
+components,weminimizebatch-wisecosinesimilarity,en- multimodalcoordinationthroughthelensofEnergy-based
+forcingspecificdisentanglement: Models(EBMs). Ratherthanexplicitlyreweightinglosses
+L = (cid:88) sin(zs,zs). (3) or manually correcting gradients, EMC constructs a struc-
+dis i j tured multimodal energy landscape and performs coordi-
+i̸=j
+nation through both energy-gap minimization and energy-
+Inaddition,toensureeachmodality-specificcomponent
+gradient dynamics. This provides a fully differentiable
+retainspredictivecapability,weemployaunimodalpredic-
+mechanism for suppressing dominant modalities and am-
+torT anddefinetheunimodaltasklossas:
+m plifyingweakeronesduringjointoptimization.
+L = 1 (cid:88) ℓ(T (zs ),y), (4) Energy Function. For each modality m, we define a
+uni |M| m m modality-specific energy potential that integrates semantic
+m∈M
+activation,taskdifficulty,andpredictivereliability:
+where ℓ(·,·) is the task loss (e.g., cross-entropy or regres-
+sionloss). TheoveralllossforMSDis: E(m)=α∥z ∥2+βℓ +γu , (8)
+m 2 m m
+
+===== PAGE 4 =====
+Multimodal Feature Extraction Modality Disentangle & Compensate Modality Coorination & Trusting Setiment Classifier
+Stage I Stage II
+Multimodal Feature
+I’ll never forget Fuse
+his face. W
+Text
+Energy-gradient flow Linear
+...
+ReLU
+Linear
+Visual
+W
+ReLU
+Linear
+Probabilistic embedding
+Acoustic Negative Positive
+Modality Enhance Modality Balance
+Modality Features Data noise Modality Compensate Weight Direction Feature Space
+Figure2.TheoverallarchitectureofourproposedmodelEBMC.
+u =E (cid:2) H (cid:0) pi (y) (cid:1)(cid:3) ,H(p)=− (cid:88) p(y)logp(y). (9) EMCobjectivebecomes:
+m i Tm
+y
+(cid:88) (cid:13) (cid:13)∂E(m) (cid:13) (cid:13) 2
+where∥z m ∥2 2 capturesrepresentationmagnitude, ℓ m isthe L EMC =L gap +δ (cid:13) (cid:13) ∂z (cid:13) (cid:13) , (12)
+modality-specific task loss, and u m denotes predictive un- m m
+certainty. This formulation yields a multi-factor energy
+where the second term penalizes unstable or overly sharp
+landscape in which weaker modalities typically exhibit
+energygradients,promotingsmootherenergyflowsandsta-
+higher energy due to noisier signals or less discriminative
+blemultimodalconvergence.
+features. RefertoAppendixBfordetails.
+Energy-gap Minimization. Dominant modalities of-
+3.5.Instance-awareModalityTrustDistillation
+tenacquiredisproportionatelylowenergy,enablingthemto
+overwhelm weaker ones. To prevent this imbalance, EMC MSD and CCE alleviate modality imbalance at the repre-
+enforcesaglobalenergy-equilibriumobjective: sentationlevel;however,traditionalfusionschemesremain
+vulnerable to noise and missing modalities at the instance
+(cid:88)
+L gap = (E(m i )−E(m j ))2. (10) level [24, 28, 65]. To further enhance robustness, we in-
+i,j troduceInstance-awareModalityTrustDistillation(IMTD),
+which uses probabilistic embeddings to estimate sample-
+MinimizingEq.(10)encouragesallmodalitiestoconverge
+specificmodalityconfidenceandadaptivelyweightmodal-
+toward a balanced regime, ensuring that under-utilized
+itycontributionsduringdistillation.
+modalitiesreceiveincreasedoptimizationfocus.
+Specifically,formodalitym,theteachermodelT from
+m
+Energy-gradientFlow. Beyondmatchingenergymag-
+MSD (Sec. 3.2) produces a predictive probability distribu-
+nitudes, EMC further regulates optimization dynamics by
+tionp (y)foreachsample. Wedenoteitsmeanandvari-
+explicitlyadoptinganenergy-descentupdate: ancea T s m µi andσi ,whereσi representsthepredictiveun-
+m m m
+certaintyofmodalitymforsamplei. Weconvertthevari-
+∂E(m)
+∆z =−λ . (11) anceintoaconfidencescore:
+m ∂z
+m
+ci =exp(−σi ), (13)
+m m
+This implicitly forms a negative-feedback mechanism:
+modalities with excessively low energy (over-confident or
+so lower variance implies higher certainty and thus higher
+overly dominant) receive suppressive gradients, whereas
+confidence.Toavoidinstabilityfromexcessivelylargevari-
+high-energy modalities naturally obtain larger corrective
+ances,weintroduceasoftnormalizationfactor:
+gradients. Such dynamics approximate gradient flows in
+EBMsandprovideanadaptive,self-correctingtrainingtra- 1
+ρi = , (14)
+jectory. Combining the above components, the complete m log(1+∥σ2i∥ )
+m 1
+
+===== PAGE 5 =====
+which suppresses the influence of unstable modalities and score (F1), Correlation (Corr), and Mean Absolute Error
+smoothstheconfidencedistribution. Thefinaladaptivedis- (MAE). Following prior work conventions [60, 69], Acc-
+tillation weight combines teacher confidence and normal- 2 and F1 are reported in two forms (denoted as ‘-/-’): one
+izedreliability: withzeroasnegative/non-negative,andtheotherexcluding
+zeroasnegative/positive. ForIEMOCAP,asrecommended
+ci ρi
+αi = m m . (15) by[24,50],weevaluatetheF1scoreforfouremotioncate-
+m (cid:80)
+m
+ci
+m
+ρi
+m gories(happy,sad,angry,andneutral).
+During distillation, the student’s fused prediction is
+Implementation Details. To ensure fair comparisons
+alignedwiththeteacheroutputsviaaconfidence-weighted
+with previous studies, we use the same feature extraction
+KLdivergence:
+settings.Forlanguagemodality,weuseBERT model[7]
+base
+(cid:88) (cid:16) (cid:17) to obtain a 768-dimensional hidden state as the word fea-
+L = αi KL σ(zi /τ)∥σ(zi /τ) , (16)
+IMTD m fusion Tm tures, andadditionallyincorporate300-dimensionalGloVe
+m,i
+features [36] for consistency with prior ERC work on
+whereσ(·)denotesthesoftmaxfunctionandτ isatemper- IEMOCAP.Forthevisualmodality,weextract35facialac-
+ature coefficient. IMTD assigns higher weights to reliable tionunitfeaturesusingFacet,andfortheacousticmodality,
+modalitiesanddown-weightsnoisyonesatthesamplelevel, we use COVAREP [6] to obtain 74-dimensional low-level
+providingastablewaytohandlemodalitymissingnessand acoustic descriptors. Hyperparameters λ 1 ,λ 2 , β,γ,η are
+noise while enhancing robustness; further analyses will be all set to 0.1, and ζ is set to 0.5 based on validation per-
+discussedin Sec.4.4. formance. All experiments are conducted on a RTX 4090
+GPU(48GB)withabatchsizeof64. EachstageofEBMC
+3.6.OverallTrainingObjective is trained for 100 epochs. Additional implementation de-
+tailsareprovidedinAppendixA.2.
+With the losses defined in Eq. (5) – Eq. (16), the overall
+EBMCtrainingobjectiveis:
+4.1.ComparisonwithState-of-the-artMethods
+L=L +ζL +βL +γL +ηL . (17)
+task MSD CCE EMC IMTD Weconductacomprehensivecomparisonbetweenourpro-
+posedEBMCandseveralrepresentativeSOTAmodels,in-
+N cluding MuLT [44], SelfMM[59], ConKI [60], ConFEDE
+1 (cid:88)
+L = −y log(yˆ) (18) [56], CLGSI [57], MFON [68], EUAR [14], EMOE [11],
+task N i i
+i=1 GLoMo [69], DEVA [54], Semi-IIN [29]. In addition, to
+evaluatetherobustnessofEBMC,weperformextensiveex-
+Thisobjectivejointlydrivesdisentanglement, complemen-
+periments under modality-missing scenarios [23, 24, 28].
+tary enhancement, balanced coordination, and reliability-
+awarefusion,withζ,β,γ,ηweightingeachcomponent. FurtherdetailscanbefoundinAppendixA.1.
+Results on the MSA dataset. Tab. 1 demonstrates that
+4.Experiments
+EBMC consistently outperforms existing SOTA methods
+Datasets. To evaluate the generalizability of our frame- across most evaluation metrics on the CMU-MOSI and
+work for both MSA and ERC tasks, we conduct experi- CMU-MOSEI datasets. Notably, EBMC demonstrates
+ments on three widely used benchmark datasets: CMU- marked improvements in Acc-7, outperforming Semi-
+MOSI[62],CMU-MOSEI[1],andIEMOCAP[2]. CMU- IIN [29] by 1.89% on CMU-MOSI (50.34% vs. 46.50%)
+MOSI contains 2,199 opinion video clips annotated with andby1.1%onCMU-MOSEI(57.32%vs. 55.89%). This
+binarysentimentlabels. CMU-MOSEIisalargerandmore indicates that the complementary enhancement of weaker
+diversedatasetwith22,856YouTubevideosegments. Both modalitiesallowsthemodeltobettercapturediscriminative
+datasetsarelabeledwithsentimentintensityscoresfrom−3 information in samples with subtle emotional expressions.
+(stronglynegative)to+3(stronglypositive),enablingfine- Furthermore,improvementsareobservedacrossothermet-
+grainedregression-basedevaluation.IEMOCAP,astandard rics;comparedwithGLoMo[69],EBMCachievesa1.19%
+benchmarkforemotionrecognition,consistsof4,453video higherF1scoreonCMU-MOSI(87.79%vs. 86.60%)and
+clips annotated with categorical emotions across approxi- a 1.67% higher F1 score on CMU-MOSEI (88.07% vs.
+mately12hoursofaudiovisualrecordings. 86.40%). Overall, EBMC effectively disentangles shared
+and modality-specific information and enhances weaker
+Evaluation Metrics. We report the average results over
+modalities through the CCE module. In addition, we also
+fiverunswithdifferentrandomseeds. ForMOSIandMO-
+employ the energy-based modality coordination mecha-
+SEI,weevaluateEBMCperformanceusingmetricsinclud-
+nism to dynamically balance contributions across modali-
+ing2-classAccuracy(Acc-2),7-classAccuracy(Acc-7),F1
+ties,leadingtoconsistentlyimprovedperformance.
+
+===== PAGE 6 =====
+Table1. ComparisonwithSOTAmethodsontheCMU-MOSIandCMU-MOSEIdatasets. Boldindicatesthebestresult,andunderlining
+denotesthesecond-best. Note: ♡and♢representsresultsobtainedfrom[69]and[60],respectively. ∗indicatesreproducedresultsfrom
+thepubliccode.Otherresultstakendirectlyfromtheoriginalpaper.SeedetailsinSec.4.1.
+CMU-MOSI CMU-MOSEI
+Method
+Acc-2(↑) F1(↑) Acc-7(↑) Corr(↑) MAE(↓) Acc-2(↑) F1(↑) Acc-7(↑) Corr(↑) MAE(↓)
+MuLT♡[44] 79.51/80.47 79.46/80.49 36.74 0.667 0.892 81.10/83.63 81.05/83.46 52.34 0.605 0.671
+SelfMM♢[59] 82.54/84.77 84.42/85.95 45.79 0.795 0.712 82.68/84.96 82.95/84.93 53.46 0.767 0.529
+ConKI♢[60] 84.37/86.13 84.33/86.13 48.43 0.816 0.681 82.73/86.25 83.08/86.15 54.25 0.782 0.529
+ConFEDE[56] 84.17/85.52 84.13/85.52 42.27 0.742 0.784 81.65/85.82 82.17/85.83 54.86 0.780 0.522
+CLGSI[57] 83.97/86.43 83.63/86.25 47.96 0.790 0.703 84.01/86.32 84.21/86.18 54.56 0.763 0.532
+MFON[68] 84.84/86.89 84.75/86.86 44.90 0.797 0.725 82.70/86.32 83.13/86.29 53.72 0.780 0.528
+EUAR∗[14] 83.24/84.58 84.22/84.58 48.18 0.789 0.711 82.20/85.64 82.02/85.46 51.07 0.785 0.596
+EMOE∗[11] 83.73/85.58 83.68/85.59 38.16 0.798 0.736 81.90/85.66 82.51/85.69 52.89 0.708 0.612
+GLoMo♡[69] 84.10/86.70 83.90/86.60 48.30 0.782 0.718 83.70/86.50 84.00/86.40 55.00 0.771 0.539
+DEVA[54] 84.40/86.29 84.48/86.30 46.32 0.787 0.730 83.26/86.13 82.93/86.21 52.26 0.769 0.541
+Semi-IIN[29] 85.28/87.04 85.19/87.00 46.50 0.822 0.679 84.98/87.70 85.27/87.65 55.89 0.804 0.497
+EBMC(ours) 86.26/87.84 86.20/87.79 50.34 0.833 0.694 86.04/88.10 86.23/88.07 57.32 0.824 0.505
+Table2.ComparisonofF1-scoresacrossdifferentmethodsonthe Table3.Comparisonofperformanceundersixincompletemodal-
+IEMOCAPdataset.PleaseseeSec.4.1fordetails. itytestingconditionsonCMU-MOSEIdatasets.RefertoSec.4.2.
+Methods Happy Sad Angry Neutral Avg. TestingConditions
+Models
+Self-MM[59] 90.8 86.7 88.4 72.7 84.65 {A} {T} {V} {A,V} {A,T} {T,V} Avg.
+MCTN[37] 83.1 82.8 84.6 67.7 79.55 Self-MM[59] 43.57 71.53 37.61 49.52 75.91 74.62 58.79
+TransM[51] 85.5 84.0 86.1 67.1 80.68 CubeMLP[41] 39.54 67.52 32.58 48.54 71.69 70.06 54.99
+SMIL[30] 86.8 85.2 84.9 68.9 81.45 MCTN[37] 62.72 75.50 59.46 64.84 76.64 77.13 69.38
+GCNet[28] 87.7 86.9 85.2 71.1 82.73 TransM[51] 63.68 77.98 58.67 62.24 80.46 78.61 70.27
+UMDF[23] 87.9 86.5 85.8 70.5 82.68 GCNet[28] 66.54 80.52 61.83 69.21 81.96 81.15 73.54
+CorrKD[24] 87.5 85.9 86.1 71.5 82.75 DMD[24] 46.18 70.26 39.84 52.70 74.78 72.45 59.37
+CorrKD[24] 66.09 80.76 62.30 71.92 81.74 81.28 74.02
+DMD[26] 91.1 88.4 88.6 72.2 85.08
+EUAR[14] 60.70 85.20 65.30 65.30 85.10 86.00 74.50
+EBMC(Ours) 92.0 89.5 90.3 73.6 86.35
+EBMC(Ours) 71.67 84.79 70.05 73.34 86.76 86.90 78.92
+ResultsontheERCdataset. Tofurtherevaluatethegen- estF1scoresunderalmostallmissingmodalityconditions.
+eralization ability of EBMC, we assess its performance Weobservethefollowing: (i)Competitormethodsperform
+on the ERC task. As shown in Tab. 2, EBMC demon- significantly worse in single-modal conditions, especially
+stratesstrongperformanceontheIEMOCAPdatasetacross whenonlyvisualoraudiomodalitiesareavailable. EBMC
+all four emotion categories. The strongest baseline DMD effectively mitigates this issue. In the initial stage, MSD
+[26], records an average F1-score of 85.08%, whereas andCCEmodulesareabletolearnusefulinformationeven
+EBMCachieves86.35%, reflectinga1.27%improvement. withmissingmodalities. (ii)Modalitymissingnessleadsto
+Notably, ERC involves finer-grained emotion categories, a decline in performance across all modalities, which fur-
+wherehumanemotionalexpressioncanemphasizedifferent ther highlights the heterogeneity between modalities. As
+cues,andcertainsignalsmaybemoresalientinaudioorvi- thenumberofmodalitiesincreases,integratingcomplemen-
+sual modalities. Moreover, Tab. 2 also shows that EBMC tary information from different modalities can effectively
+achievesparticularlypronouncedgainsinHappyandAngry enhance the emotional semantics in the joint representa-
+category, indicating enhanced discriminative capability in tion. These results demonstrate the superiority of EBMC
+capturingemotionalintensityandsemanticdetails.Overall, in multi-modal missingness scenarios, enabling the model
+EBMC can excel high-level performance on fine-grained, to fully leverage the potential of remaining modalities and
+complex ERC scenarios, further validating the effective- compensatefortheimpactofmissinginformation.
+ness of its complementary enhancement and energy-based
+modalitycoordinationmechanisms. 4.3.AblationStudies
+ToassessthecontributionofeachkeycomponentinEBMC,
+4.2.RobustAnalysisonIncompleteConditions
+weconductablationstudiesontheCMU-MOSIandCMU-
+TocomprehensivelyevaluatetheperformanceofEBMCun- MOSEI datasets. Firstly, as shown in Tab. 4, removing
+der various incomplete modality conditions, we compared theMSDmodulesignificantlyimpairsthemodel’sabilityto
+it with other methods [14, 28, 37] on the CMU-MOSEI disentanglesharedandmodality-specificinformation,lead-
+dataset. As shown in Tab. 3, EBMC achieves the high- ingtoadecreaseinF1by1.63%onCMU-MOSIand1.76%
+
+===== PAGE 7 =====
+(a) w/o MSD (b) w/o CCE (c) EBMC
+Negative Positive
+Figure3. T-SNEvisualizationoffeaturesdistrubutiononCMU-MOSI.Theclosercoloristored, themorepositivesentiment. EBMC
+demonstratessuperiorperformanceinMSA.PleaserefertoSec.4.4.
+Table4.AblationstudiesforeachmoduleinourproposedEBMC
+onCMU-MOSIandCMU-MOSEIdatasets.RefertoSec.4.3.
+CMU-MOSI CMU-MOSEI
+Model 100
+Acc-2(↑) F1(↑) Acc-2(↑) F1(↑)
+EBMC 86.26/87.84 86.20/87.79 86.04/88.10 86.23/88.07
+w/oMSD 84.37/86.23 84.30/86.16 84.24/86.32 84.16/86.31
+w/oCCE 84.92/86.98 84.87/86.90 84.55/86.96 84.52/86.89 75
+w/oEMC 83.54/85.41 83.56/85.32 83.51/85.12 83.47/85.20
+w/oIMTD 85.35/87.01 85.24/86.77 85.26/87.15 84.96/87.09
+50
+on CMU-MOSEI. Similarly, omitting the CCE module
+weakens the enhancement of weaker modalities, resulting CMU-MOSI CMU-MOSEI IEMOCAP
+inF1reductionsof0.89%and1.18%,respectively. Theex-
+clusionoftheEMCmoduleseverelydisruptsmodalityco-
+ordination,causingthelargestF1dropof2.43%and2.87%.
+Finally, removing the IMTD module, which ensures the
+adaptiveweightingofmodalitiesbasedonsample-levelreli-
+ability,leadstoareductionof1.02%and0.98%inF1onthe
+twodatasets. IMTDiscrucialformodalitymissingness,as
+furtherdiscussedinSec.4.4(Q3). Thesefindingshighlight
+thecriticalroleofeachcomponentinEBMC,emphasizing
+their individual contributions to improving discriminative
+multimodalfeaturelearningandoverallrobustness.
+4.4.AnalysesandDiscussions
+TobetterassesstheeffectivenessofEBMC,weconductin-
+depthanalysestoanswerthefollowingkeyquestions:
+Q1: How does weak modality enhancement im-
+prove emotion classification performance? To evalu-
+ate the effectiveness of MSD and CCE, we conduct ab-
+lation studies and use t-SNE [32] for 2D visualization of
+high-dimensional features. Fig. 3a (w/o MSD) shows a
+mixed feature distribution with unclear emotional bound-
+aries,indicatingthatwithoutsemanticalignment,themodel
+struggles to fuse information, resulting in scattered fea-
+)%(noitubirtnoC
+100
+75
+50
+CMU-MOSI CMU-MOSEI IEMOCAP
+)%(noitubirtnoC
+100
+90
+80
+70
+)%(2-ccA
+Text Text
+Audio EBMC Audio w/oEMC EBMC
+Video Video W/oEMC
+Figure4.TheimpactofEMConmodalitycontributionsandover-
+all performance. The dual y-axes show the average contribution
+ofeachmodality(left)andthecorrespondingAcc-2score(right).
+PleaserefertoSec.4.4.Bestviewedincolor.
+tures and low emotional category distinction. Introducing
+MSD(Fig.3b)improvesfeaturedistribution,makingemo-
+tionalboundariesclearer,thoughscatteredpointsremainin
+transition areas due to weak modality signals in ambigu-
+oussamples. MSDalignssharedsemanticcomponentsbut
+doesn’t fully compensate for weak modality signals. With
+CCE (Fig. 3c), scattered points cluster into corresponding
+emotionalcategories,enhancingweakmodalityrepresenta-
+tionandimprovingemotionclassificationaccuracy. These
+results demonstrate that weak modality enhancement ad-
+dresses modality heterogeneity, enhances weak modality
+representation,andimprovesclassificationaccuracy.
+Q2: Howdoesenergy-drivenmodalitycollaboration
+alleviatethemodalitycompetitionissue? EMCaddresses
+modality competition by dynamically balancing the con-
+tributions of each modality during training. As shown in
+Fig. 4, without EMC, the textual modality dominates with
+over 50% contribution on all three datasets, suppressing
+audio and video signals and leading to imbalanced mul-
+
+===== PAGE 8 =====
+Table5.RobustnesscomparisonofoverallperformanceontheCMU-MOSIandCMU-MOSEIdatasetsunderintra-modalitymissingness,
+simulatedbyrandomlydroppingframe-levelfeaturesatvaryingrates(p∈{0,0.1,...,0.9}).RefertoSec.4.4fordetails.
+CMU-MOSI CMU-MOSEI
+Methods
+Acc-2(↑) F1(↑) Acc-7(↑) Corr(↑) MAE(↓) Acc-2(↑) F1(↑) Acc-7(↑) Corr(↑) MAE(↓)
+MISA[17] 70.33/71.49 70.00/71.28 29.85 0.524 1.085 75.82/71.27 68.73/63.85 40.84 0.503 0.780
+Self-MM[59] 69.26/70.51 67.54/66.60 29.55 0.512 1.070 77.42/73.89 72.31/68.92 44.70 0.498 0.695
+MMIM[16] 67.06/69.14 64.04/66.65 31.30 0.507 1.077 75.89/73.32 70.32/68.72 40.75 0.489 0.739
+CENET[45] 67.73/71.46 64.85/68.41 30.38 0.504 1.080 77.34/74.67 74.08/70.68 47.18 0.535 0.685
+TETFN[46] 67.68/69.76 63.29/65.69 30.30 0.507 1.087 67.68/69.76 63.29/65.69 30.30 0.508 1.087
+TFR-Net[61] 66.35/68.15 60.06/61.73 29.54 0.459 1.200 77.23/73.62 71.99/68.80 46.83 0.489 0.697
+ALMT[64] 68.39/70.40 71.80/72.57 30.30 0.498 1.083 77.54/76.64 78.03/77.14 40.92 0.481 0.674
+LNLN[65] 70.94/72.55 71.25/72.73 34.26 0.527 1.046 78.19/76.30 79.95/77.77 45.42 0.530 0.692
+EBMC(Ours) 72.30/73.48 72.19/74.25 34.65 0.545 0.994 78.56/76.93 80.17/78.32 45.69 0.588 0.680
+timodal fusion. With EMC, the contribution distribution (a) Happy (b) Angry (c) Neutral
+across modalities improves significantly: text dominance
+Vision Vision Vision
+is reduced while audio and video contributions increase,
+resulting in a more balanced utilization of all modality
+Acoustic Acoustic Acoustic
+information. This rebalancing directly translates to per-
+formance gains, as reflected by consistently higher Acc-2 Text I’ll never forget Text Well, then you know Text Um- I think
+his face. it's not only my business. I have some friends.
+scoresacrossMOSI,MOSEI,andIEMOCAP.Theseresults
+demonstratethatEMCeffectivelyreducesmodalitycompe- CorrKD GLoMo Ours CorrKD GLoMo Ours CorrKD GLoMo Ours
+tition, ensuring weaker modalities are not overshadowed, Happy Happy Happy Neutral Angry Angry Happy Sad Neutral
+andyieldingamorecomprehensiverepresentationthaten-
+Figure5. ComparisonofEBMCandbaselinepredictionsonthe
+hancesperformanceinbothMSAandERCtasks.
+testsetsofIEMOCAP.Referto Sec.4.5.
+Q3: What are the advantages of instance-aware
+modalitytrustdistillation?Wefollowpriorworks[61,65] showninFig.5cwherethetrueNeutrallabelisincorrectly
+byrandomlydroppingframe-levelfeaturesatvaryingrates classified as Happy or Sad. In contrast, EBMC leverages
+(p ∈ {0,0.1,...,0.9})tosimulateintra-modalitymissing- enhanced audio–visual signals through CCE and mitigates
+ness, and average results across all rates to measure ro- textual dominance via EMC, enabling the model to cap-
+bustness. As shown in Tab. 5, EBMC consistently out- tureweakprosody,subtlefacialmovements,andothernon-
+performs all baselines on both datasets. On CMU-MOSI, verbal markers that better reflect the true emotional state.
+it surpasses LNLN [65] by 1.52% in F1 and 0.39% in Overall, these cases demonstrate EBMC’s superiority in
+Acc-7, while reducing MAE from 1.046 to 0.994; simi- discerning subtle emotions, resolving cross-modal imbal-
+lar gains hold on CMU-MOSEI, with Corr improving by ance,andachievingrobustmultimodalinference.
+0.058. This robustness stems from the IMTD mechanism,
+whichdynamicallyestimatesper-samplemodalityreliabil- 5.Conclusion
+ity at inference time. When a modality is heavily cor-
+In this work, we present a simple yet effective Enhance-
+rupted, IMTD suppresses its contribution and up-weights
+then-BalanceModalityCollaboration(EBMC)framework,
+morereliablemodalities,enablingfine-grainedrebalancing
+suitable for both full-modality and modality-missing sce-
+thatfixed-weightormodality-levelfusionstrategies[61,65]
+narios. EBMC adopts a two-stage design: the first stage
+cannot achieve. As a result, EBMC retains discriminative
+extractsandalignssemanticinformationfromeachmodal-
+cross-modalinformationunderhighnoiseandyieldsbetter-
+ity,preservingunimodalpeakpredictioncapability;thesec-
+calibratedsentimentintensitypredictions.
+ondstageintroducesadaptivefusionusingEMCandIMTD
+to optimize the contributions of each modality. Exten-
+4.5.CaseStudy
+sive experiments demonstrate the superiority and robust-
+We compare EBMC with strong baselines on IEMOCAP ness of EBMC. Ablation studies and further analyses con-
+samples.Forclearemotionalexpressions(Fig.5a),allmod- firm that enhancing weak modalities and dynamically ad-
+els correctly recognize the sentiment. When emotional in- justingmodalitycontributionssignificantlyimprovemodel
+tensity is low—for example, neutral utterances with flat performance.Moreover,EBMCoffersaunifiedperspective
+prosody or weakly negative expressions with minimal fa- that bridges representation enhancement and modality co-
+cialcues—baselinemodelstendtoover-relyontextualpo- ordination,yieldingconsistentgainsacrossdiverseemotion
+larity. As a result, they often mispredict the emotion, as recognitiontasks.
+
+===== PAGE 9 =====
+Acknowledgments [10] Yunfeng Fan, Wenchao Xu, Haozhao Wang, Junhong Liu,
+andSongGuo. Detachedandinteractivemultimodallearn-
+This work is supported by the National Natural Science
+ing. InProceedingsofthe32ndACMInternationalConfer-
+FoundationofChina(No. 62176187). Wesincerelythank enceonMultimedia,pages5470–5478,2024.
+theauthorsofEMOE[11],whoseworkinspiredthevisual
+[11] Yiyang Fang, Wenke Huang, Guancheng Wan, Kehua Su,
+designofseveralfiguresinthispaper. andMangYe. Emoe: Modality-specificenhanceddynamic
+emotionexperts.InProceedingsoftheComputerVisionand
+References PatternRecognitionConference,pages14314–14324,2025.
+[12] Yiyang Fang, Jian Liang, Wenke Huang, He Li, Kehua
+[1] AmirAliBagherZadeh,PaulPuLiang,SoujanyaPoria,Erik
+Su, and Mang Ye. Catch your emotion: Sharpening emo-
+Cambria, and Louis-Philippe Morency. Multimodal lan-
+tion perception in multimodal large language models. In
+guageanalysisinthewild: CMU-MOSEIdatasetandinter-
+Forty-second International Conference on Machine Learn-
+pretabledynamicfusiongraph. InProceedingsofthe56th
+ing,2025.
+Annual Meeting of the Association for Computational Lin-
+[13] Mart´ınez-PlumedFernando,FerriCe`sar,NievesDavid,and
+guistics(Volume1:LongPapers),pages2236–2246,2018.
+Herna´ndez-Orallo Jose´. Missing the missing values: The
+[2] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe
+uglyducklingoffairnessinmachinelearning. International
+Kazemzadeh, Emily Mower, Samuel Kim, Jeannette N
+JournalofIntelligentSystems,36(7):3217–3258,2021.
+Chang, Sungbok Lee, and Shrikanth S Narayanan. Iemo-
+[14] Zixian Gao, Disen Hu, Xun Jiang, Huimin Lu, Heng Tao
+cap: Interactiveemotionaldyadicmotioncapturedatabase.
+Shen, and Xing Xu. Enhanced experts with uncertainty-
+Languageresourcesandevaluation,42:335–359,2008.
+aware routing for multimodal sentiment analysis. In Pro-
+[3] HaoranChen,JiapengLiu,ZuheLi,YushanPan,Hongwei
+ceedingsofthe32ndACMInternationalConferenceonMul-
+Tao,HuaiguangWu,YunyangWang,andChenguangYang.
+timedia,pages9650–9659,2024.
+Cr-gac:Cross-modalrecombinationviagraph-attentioncol-
+[15] Zixian Gao, Xun Jiang, Xing Xu, Fumin Shen, Yujie Li,
+laborative optimization for multimodal sentiment analysis.
+and Heng Tao Shen. Embracing unimodal aleatoric un-
+ExpertSystemswithApplications,page129805,2025.
+certainty for robust multimodal fusion. In Proceedings of
+[4] Luke Chen, Junyao Wang, Trier Mortlock, Pramod Khar-
+the IEEE/CVF conference on computer vision and pattern
+gonekar, and Mohammad Abdullah Al Faruque. Hyperdi-
+recognition,pages26876–26885,2024.
+mensional uncertainty quantification for multimodal uncer-
+[16] Wei Han, Hui Chen, and Soujanya Poria. Improving mul-
+taintyfusioninautonomousvehiclesperception.InProceed-
+timodal fusion with hierarchical mutual information maxi-
+ingsoftheComputerVisionandPatternRecognitionConfer-
+mizationformultimodalsentimentanalysis. arXivpreprint
+ence,pages22306–22316,2025.
+arXiv:2109.00412,2021.
+[5] Arindam Das, Sudip Das, Ganesh Sistu, Jonathan Horgan,
+[17] Devamanyu Hazarika, Roger Zimmermann, and Soujanya
+Ujjwal Bhattacharya, Edward Jones, Martin Glavin, and
+Poria. Misa: Modality-invariant and-specific representa-
+Ciara´nEising.Revisitingmodalityimbalanceinmultimodal
+pedestriandetection.In2023IEEEInternationalConference tionsformultimodalsentimentanalysis. InProceedingsof
+the28thAssociationforComputingMachineryInternational
+onImageProcessing(ICIP),pages1755–1759,2023.
+ConferenceonMultimedia,pages1122–1131,2020.
+[6] Gilles Degottex, John Kane, Thomas Drugman, Tuomo
+Raitio,andStefanScherer. Covarep—acollaborativevoice [18] Kang He, Boyu Chen, Yuzhe Ding, Fei Li, Chong Teng,
+analysisrepositoryforspeechtechnologies. In2014ieeein- and Donghong Ji. Pase: Prototype-aligned calibration and
+ternationalconferenceonacoustics,speechandsignalpro- shapley-basedequilibriumformultimodalsentimentanaly-
+cessing(icassp),pages960–964,2014. sis. arXivpreprintarXiv:2511.17585,2025.
+[7] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina [19] KangHe,YuzheDing,HainingWang,FeiLi,ChongTeng,
+Toutanova. Bert: Pre-training of deep bidirectional trans- andDonghongJi. DALR:Dual-levelalignmentlearningfor
+formersforlanguageunderstanding. InProceedingsofthe multimodalsentencerepresentationlearning. InFindingsof
+2019conferenceoftheNorthAmericanchapteroftheasso- the Association for Computational Linguistics: ACL 2025,
+ciationforcomputationallinguistics:humanlanguagetech- pages3586–3601,2025.
+nologies, volume 1 (long and short papers), pages 4171– [20] Chengxiang Huang, Yake Wei, Zequn Yang, and Di Hu.
+4186,2019. Adaptive unimodal regulation for balanced multimodal in-
+[8] YuzheDing, KangHe, BoboLi, LiZheng, HaijunHe, Fei formation acquisition. In Proceedings of the Computer
+Li,ChongTeng,andDonghongJi. Zero-shotconversational Vision and Pattern Recognition Conference, pages 25854–
+stance detection: Dataset and approaches. In Findings of 25863,2025.
+the Association for Computational Linguistics: ACL 2025, [21] Yi-Lun Lee, Yi-Hsuan Tsai, Wei-Chen Chiu, and Chen-Yu
+pages3221–3235,2025. Lee. Multimodalpromptingwithmissingmodalitiesforvi-
+[9] YunfengFan,WenchaoXu,HaozhaoWang,JunxiaoWang, sualrecognition. InProceedingsoftheIEEE/CVFConfer-
+andSongGuo.Pmr:Prototypicalmodalrebalanceformulti- ence on Computer Vision and Pattern Recognition, pages
+modallearning.InProceedingsoftheIEEE/CVFConference 14943–14952,2023.
+onComputerVisionandPatternRecognition,pages20029– [22] BoboLi,HaoFei,LiziLiao,YuZhao,ChongTeng,Tat-Seng
+20038,2023. Chua,DonghongJi,andFeiLi. Revisitingdisentanglement
+
+===== PAGE 10 =====
+andfusiononmodalityandcontextinconversationalmulti- for flexible multimodal alignment. In Proceedings of the
+modalemotionrecognition. InProceedingsofthe31stACM ComputerVisionandPatternRecognitionConference,pages
+InternationalConferenceonMultimedia,pages5923–5934, 29847–29857,2025.
+2023. [34] AaronvandenOord, YazheLi, andOriolVinyals. Repre-
+[23] MingchengLi, DingkangYang, YuxuanLei, ShunliWang, sentationlearningwithcontrastivepredictivecoding. arXiv
+Shuaibing Wang, Liuzhen Su, Kun Yang, Yuzheng Wang, preprintarXiv:1807.03748,2018.
+MingyangSun,andLihuaZhang. Aunifiedself-distillation [35] XiaokangPeng,YakeWei,AndongDeng,DongWang,and
+frameworkformultimodalsentimentanalysiswithuncertain DiHu.Balancedmultimodallearningviaon-the-flygradient
+missingmodalities. InProceedingsoftheAAAIconference modulation. InProceedingsoftheIEEE/CVFconferenceon
+onartificialintelligence,pages10074–10082,2024. computervisionandpatternrecognition,pages8238–8247,
+[24] Mingcheng Li, Dingkang Yang, Xiao Zhao, Shuaibing 2022.
+Wang, Yan Wang, Kun Yang, Mingyang Sun, Dongliang [36] Jeffrey Pennington, Richard Socher, and Christopher Man-
+Kou,ZiyunQian,andLihuaZhang. Correlation-decoupled ning.GloVe:Globalvectorsforwordrepresentation.InPro-
+knowledge distillation for multimodal sentiment analy- ceedings of the 2014 Conference on Empirical Methods in
+sis with incomplete modalities. In Proceedings of the NaturalLanguageProcessing(EMNLP),pages1532–1543,
+IEEE/CVF Conference on Computer Vision and Pattern 2014.
+Recognition,pages12458–12468,2024. [37] HaiPham,PaulPuLiang,ThomasManzini,Louis-Philippe
+[25] Shawn Li, Huixian Gong, Hao Dong, Tiankai Yang, Morency,andBarnaba´sPo´czos.Foundintranslation:Learn-
+Zhengzhong Tu, and Yue Zhao. Dpu: Dynamic prototype ing robust joint representations by cyclic translations be-
+updating for multimodal out-of-distribution detection. In tween modalities. In Proceedings of the AAAI conference
+ProceedingsoftheComputerVisionandPatternRecognition onartificialintelligence,pages6892–6899,2019.
+Conference,pages10193–10202,2025. [38] SoujanyaPoria,ItiChaturvedi,ErikCambria,andAmirHus-
+[26] Yong Li, Yuanzhi Wang, and Zhen Cui. Decoupled multi- sain. Convolutionalmklbasedmultimodalemotionrecogni-
+modaldistillingforemotionrecognition. InProceedingsof tionandsentimentanalysis.In2016IEEE16thinternational
+theIEEE/CVFConferenceonComputervisionandPattern conferenceondatamining(ICDM),pages439–448,2016.
+Recognition,pages6631–6640,2023. [39] RGnanaPraveenandJahangirAlam. Recursivejointcross-
+[27] YanLi,YifeiXing,XiangyuanLan,XinLi,HaifengChen, modalattentionformultimodalfusionindimensionalemo-
+and Dongmei Jiang. Alignmamba: Enhancing multimodal tionrecognition. InProceedingsoftheIEEE/CVFConfer-
+mamba with local and global cross-modal alignment. In ence on Computer Vision and Pattern Recognition, pages
+ProceedingsoftheComputerVisionandPatternRecognition 4803–4813,2024.
+Conference,pages24774–24784,2025. [40] Tao Shi and Shao-Lun Huang. Multiemo: An attention-
+[28] Zheng Lian, Lan Chen, Licai Sun, Bin Liu, and Jianhua based correlation-aware multimodal fusion framework for
+Tao. Gcnet:Graphcompletionnetworkforincompletemul- emotionrecognitioninconversations. InProceedingsofthe
+timodallearninginconversation. IEEETransactionsonpat- 61st Annual Meeting of the Association for Computational
+tern analysis and machine intelligence, 45(7):8419–8432, Linguistics (Volume 1: Long Papers), pages 14752–14766,
+2023. 2023.
+[29] JinhaoLin, YifeiWang, YanwuXu, andQiLiu. Semi-iin: [41] Hao Sun, Hongyi Wang, Jiaqing Liu, Yen-Wei Chen, and
+Semi-supervised intra-inter modal interaction learning net- LanfenLin. Cubemlp: Anmlp-basedmodelformultimodal
+workformultimodalsentimentanalysis. InProceedingsof sentiment analysis and depression estimation. In Proceed-
+theAAAIConferenceonArtificialIntelligence,pages1411– ingsofthe30thACMinternationalconferenceonmultime-
+1419,2025. dia,pages3722–3729,2022.
+[30] Mengmeng Ma, Jian Ren, Long Zhao, Sergey Tulyakov, [42] Chuanqi Tao, Jiaming Li, Tianzi Zang, and Peng Gao. A
+Cathy Wu, and Xi Peng. Smil: Multimodal learning with multi-focus-driven multi-branch network for robust multi-
+severelymissingmodality. InProceedingsoftheAAAICon- modalsentimentanalysis. InProceedingsoftheAAAICon-
+ferenceonArtificialIntelligence,pages2302–2310,2021. ferenceonArtificialIntelligence,pages1547–1555,2025.
+[31] YimingMa, VictorSanchez, SoodehNikan, DeveshUpad- [43] Yun-Da Tsai, Ting-Yu Yen, Keng-Te Liao, and Shou-De
+hyay,BhushanAtote,andTanayaGuha. Robustmultiview Lin.Enhancemodalityrobustnessintext-centricmultimodal
+multimodal driver monitoring system using masked multi- alignmentwithadversarialprompting. InProceedingsofthe
+headself-attention. InProceedingsoftheIEEE/CVFCon- AAAI Conference on Artificial Intelligence, pages 27740–
+ferenceonComputerVisionandPatternRecognition,pages 27747,2025.
+2617–2625,2023. [44] Yao-HungHubertTsai, ShaojieBai, PaulPuLiang, JZico
+[32] LaurensvanderMaatenandGeoffreyHinton. Visualizing Kolter,Louis-PhilippeMorency,andRuslanSalakhutdinov.
+data using t-sne. Journal of machine learning research, 9: Multimodaltransformerforunalignedmultimodallanguage
+2579–2605,2008. sequences.InProceedingsoftheconference.Associationfor
+[33] Mayug Maniparambil, Raiymbek Akshulakov, Yasser Ab- computationallinguistics.Meeting,page6558,2019.
+delaziz Dahou Djilali, Sanath Narayan, Ankit Singh, and [45] Di Wang, Shuai Liu, Quan Wang, Yumin Tian, Lihuo He,
+Noel E O’Connor. Harnessing frozen unimodal encoders andXinboGao.Cross-modalenhancementnetworkformul-
+
+===== PAGE 11 =====
+timodalsentimentanalysis. IEEETransactionsonMultime- learning guided by sentiment intensity. In Findings of the
+dia,25:4909–4921,2022. Association for Computational Linguistics: NAACL 2024,
+[46] DiWang,XutongGuo,YuminTian,JinhuiLiu,LiHuoHe, pages2099–2110,2024.
+andXuemeiLuo. Tetfn:Atextenhancedtransformerfusion [58] JianfeiYuandJingJiang. Adaptingbertfortarget-oriented
+networkformultimodalsentimentanalysis. PatternRecog- multimodal sentiment classification. In Proceedings of the
+nition,136:109259,2023. 28th International Joint Conference on Artificial Intelli-
+[47] Haining Wang, Kang He, Bobo Li, Lei Chen, Fei Li, Xu gence,2019.
+Han, ChongTeng, andDonghongJi. Refiningandsynthe- [59] WenmengYu,HuaXu,ZiqiYuan,andJieleWu. Learning
+sis:Asimpleyeteffectivedataaugmentationframeworkfor modality-specificrepresentationswithself-supervisedmulti-
+cross-domainaspect-basedsentimentanalysis. InFindings tasklearningformultimodalsentimentanalysis.InProceed-
+oftheAssociationforComputationalLinguistics:ACL2024, ingsoftheAAAIconferenceonartificialintelligence,pages
+pages10318–10329,2024. 10790–10797,2021.
+[48] Pan Wang, Qiang Zhou, Yawen Wu, Tianlong Chen, and [60] YakunYu, MingjunZhao, Shi-angQi, FeiranSun, Baoxun
+Jingtong Hu. Dlf: Disentangled-language-focused multi- Wang, Weidong Guo, Xiaoli Wang, Lei Yang, and Di Niu.
+modalsentimentanalysis. InProceedingsoftheAAAICon- Conki:Contrastiveknowledgeinjectionformultimodalsen-
+ferenceonArtificialIntelligence,pages21180–21188,2025. timentanalysis.InFindingsoftheAssociationforComputa-
+[49] WeiyaoWang,DuTran,andMattFeiszli.Whatmakestrain- tionalLinguistics:ACL2023,pages13610–13624,2023.
+ingmulti-modalclassificationnetworkshard? InProceed- [61] ZiqiYuan,WeiLi,HuaXu,andWenmengYu.Transformer-
+ings of the IEEE/CVF conference on computer vision and basedfeaturereconstructionnetworkforrobustmultimodal
+patternrecognition,pages12695–12705,2020. sentimentanalysis.InProceedingsofthe29thACMinterna-
+[50] Yansen Wang, Ying Shen, Zhun Liu, Paul Pu Liang, Amir tionalconferenceonmultimedia,pages4400–4407,2021.
+Zadeh,andLouis-PhilippeMorency. Wordscanshift: Dy- [62] AmirZadeh,RowanZellers,EliPincus,andLouis-Philippe
+namically adjusting word representations using nonverbal Morency. Mosi: multimodal corpus of sentiment intensity
+behaviors. InProceedingsoftheAAAIconferenceonarti- and subjectivity analysis in online opinion videos. arXiv
+ficialintelligence,pages7216–7223,2019. preprintarXiv:1606.06259,2016.
+[51] Zilong Wang, Zhaohong Wan, and Xiaojun Wan. Trans- [63] WeiZhai,HongzhiQi,QingZhao,JianqiangLi,ZiqiWang,
+modality: An end2end fusion method with transformer for Han Wang, Bing Yang, and Guanghui Fu. Chinese Men-
+multimodal sentiment analysis. In Proceedings of the web talBERT:Domain-adaptivepre-trainingonsocialmediafor
+conference2020,pages2514–2520,2020. Chinesementalhealthtextanalysis. InFindingsoftheAs-
+[52] YuzheWeng,HaotianWang,TianGao,KeweiLi,Shutong sociation for Computational Linguistics: ACL 2024, pages
+Niu, and Jun Du. Enhancing multimodal sentiment analy- 10574–10585,2024.
+sisformissingmodalitythroughself-distillationandunified [64] Haoyu Zhang, Yu Wang, Guanghao Yin, Kejun Liu,
+modalitycross-attention. InICASSP2025-2025IEEEInter- YuanyuanLiu, andTianshuYu. Learninglanguage-guided
+national Conference on Acoustics, Speech and Signal Pro- adaptivehyper-modalityrepresentationformultimodalsen-
+cessing(ICASSP),pages1–5,2025. timentanalysis. arXivpreprintarXiv:2310.05804,2023.
+[53] Nan Wu, Stanislaw Jastrzebski, Kyunghyun Cho, and [65] HaoyuZhang,WenbinWang,andTianshuYu. Towardsro-
+Krzysztof J Geras. Characterizing and overcoming the bust multimodal sentiment analysis with incomplete data.
+greedy nature of learning in multi-modal deep neural net- Advances in Neural Information Processing Systems, 37:
+works. In International Conference on Machine Learning, 55943–55974,2024.
+pages24043–24055,2022. [66] TaoZhangandZhenhuaTan. Ecerc: evidence-causeatten-
+[54] ShengWu, DongxiaoHe, XiaobaoWang, LongbiaoWang, tionnetworkformulti-modalemotionrecognitioninconver-
+andJianwuDang. Enrichingmultimodalsentimentanalysis sation. In Proceedings of the 63rd Annual Meeting of the
+throughtextualemotionaldescriptionsofvisual-audiocon- AssociationforComputationalLinguistics(Volume1: Long
+tent. In Proceedings of the AAAI Conference on Artificial Papers),pages2064–2077,2025.
+Intelligence,pages1601–1609,2025. [67] TengganZhang,XinjieZhang,JinmingZhao,LiZhou,and
+[55] QinfuXu,YiweiWei,ChunleiWu,LeiquanWang,Shaozu QinJin.ESCoT:Towardsinterpretableemotionalsupportdi-
+Yuan,JieWu,JingLu,andHengyangZhou. Towardsmulti- aloguesystems. InProceedingsofthe62ndAnnualMeeting
+modalsentimentanalysisviahierarchicalcorrelationmodel- oftheAssociationforComputationalLinguistics(Volume1:
+ingwithsemanticdistributionconstraints. InProceedingsof LongPapers),pages13395–13412,2024.
+theAAAIConferenceonArtificialIntelligence,pages21788– [68] XiangminZhang,WeiWei,andShihaoZou. Modalfeature
+21796,2025. optimizationnetworkwithpromptformultimodalsentiment
+[56] JiudingYang,YakunYu,DiNiu,WeidongGuo,andYuXu. analysis. In Proceedings of the 31st International Confer-
+Confede: Contrastivefeaturedecompositionformultimodal enceonComputationalLinguistics,pages4611–4621,2025.
+sentimentanalysis. InProceedingsofthe61stAnnualMeet- [69] Yan Zhuang, Yanru Zhang, Zheng Hu, Xiaoyue Zhang, Ji-
+ingoftheAssociationforComputationalLinguistics(Volume awen Deng, and Fuji Ren. Glomo: Global-local modal
+1:LongPapers),pages7617–7630,2023. fusion for multimodal sentiment analysis. In Proceedings
+[57] YangYang,XundeDong,andYupengQiang. Clgsi: amul- ofthe32ndACMInternationalConferenceonMultimedia,
+timodalsentimentanalysisframeworkbasedoncontrastive pages1800–1809,2024.
+
+===== PAGE 12 =====
+Enhance-then-Balance Modality Collaboration for Robust Multimodal
+Sentiment Analysis
+Supplementary Material
+A.ExperimentalConfiguration guided fusion module, enhancing multimodal sentiment,
+humor,andemotionanalysis.
+A.1.Baselines • Semi-IIN[29]: proposesasemi-supervisednetworkthat
+capturesintra-andinter-modalinteractionsusingmasked
+Inthisstudy,tosystematicallyevaluatemodelperformance
+attention and gating, dynamically selects important fea-
+under full-modality, missing-modality, and cross-task sce-
+tures,andleveragesunlabeleddatatoimproveMSA.
+narios, we adopt a comprehensive suite of state-of-the-art
+• MCTN [37]: learns joint representations via modality
+baselines covering multimodal fusion, semantic disentan-
+translation with cycle-consistency, enabling robust sen-
+glement,robustnessmodeling,andimbalancemitigation.
+timentpredictionfromasinglemodality.
+• MulT [44]: proposes a Multimodal Transformer that
+• TransM [51]: proposes a Transformer-based fusion
+models unaligned multimodal sequences using direc-
+method that translates between modalities to learn joint
+tionalcross-modalattention,enablinginteractionsacross
+representations,improvingMSA.
+modalitiesandtimestepswhilecapturinglong-rangede-
+• SMIL [30]: proposes a Bayesian meta-learning frame-
+pendencies.
+work for multimodal learning with missing modalities
+• SelfMM[59]: proposesaself-supervisedframeworkthat
+duringtrainingandtesting,achievingrobustperformance
+generatesunimodallabelstoenablejointtrainingofmul-
+evenwithseverelyincompletedata.
+timodal and unimodal tasks, using a dynamic weight-
+• GCNet [28]: proposes a graph-based framework for in-
+adjustment strategy to balance subtasks and enhance the
+complete multimodal conversation understanding, using
+captureofmodality-specificdifferences.
+Speaker and Temporal GNNs to capture dependencies
+• ConKI [60]: proposes a framework that injects domain-
+andjointlyoptimizingclassificationandreconstruction.
+specificandgeneralknowledgeviacontrastivelearningto
+• UMDF[23]: proposesaself-distillationframeworkwith
+enhancemultimodalsentimentprediction.
+multi-grained crossmodal interaction and dynamic fea-
+• ConFEDE [56]: proposes a unified framework that en-
+ture integration to handle uncertain missing modalities,
+hances multimodal sentiment representations by jointly
+producing robust multimodal representations for senti-
+performing contrastive representation learning and fea-
+mentanalysis.
+ture decomposition, separating modality-invariant and
+• DMD[26]: proposesDecoupledMultimodalDistillation
+modality-specificfeaturesacrosstext,video,andaudio.
+thatseparateseachmodalityintomodality-irrelevantand
+• CLGSI [57]: proposes sentiment-intensity-guided con-
+modality-exclusive spaces and applies a dynamic graph
+trastivelearningwithafusionmechanismtojointlycap-
+distillation unit to flexibly transfer crossmodal knowl-
+ture common and modality-specific features for multi-
+edge,enhancingemotionrecognition.
+modalsentimentprediction.
+• CorrKD [24]: proposes a knowledge distillation frame-
+• DEVA [54]: proposes a progressive fusion framework
+workforuncertainmissingmodalities,usingcontrastive,
+that converts audio-visual inputs into textualized senti-
+prototype-guided,andresponse-disentangledstrategiesto
+mentdescriptionsandfusesthemviaatext-guidedmod-
+reconstructmissingsemanticsandimproveMSA.
+uletocapturesubtleemotionalvariations.
+• LNLN [65]: proposes language-dominated framework
+• EUAR [14]: proposes a Mixture-of-Experts framework
+withdominant-modalitycorrectionandmultimodallearn-
+with uncertainty-aware routing to handle noisy data in
+ing modules to enhance robustness and performance in
+MSA, dynamically directing samples to experts with
+MSAundernoisyormissingdata.
+loweruncertaintytoextractclearerfeatures.
+• EMOE [11]: proposes a Mixture-of-Modality-Experts A.2.ImplementationDetails
+frameworkthatdynamicallyweightsmodalitiespersam-
+To ensure fair and reproducible comparisons with prior
+pleviaarouternetwork,andusesunimodaldistillationto
+work, we follow the standard feature extraction settings
+retainsingle-modalitypredictiveabilitywithinfusedfea-
+widelyadoptedinmultimodalsentiment/emotionanalysis.
+tures. We reproduce it using utterance-level features to
+alignwithourevaluationprotocol. Textual Modality. We extract textual features using the
+• GLoMo[69]:proposesaGlobal-LocalFusionframework BERT model[7]. Eachutteranceisencodedthroughthe
+base
+thatintegrateslocalrepresentationsviamodality-specific 12-layerTransformerencoder,fromwhichwetakethecon-
+expertsandcombinesthemwithglobalfeaturesthrougha textualizedhiddenstatesofsize768astheword-levelrep-
+
+===== PAGE 13 =====
+resentations. Following established IEMOCAP ERC pro- Table6. Comparisonoftrainingefficiencyandparametersacross
+tocols,weadditionallyincorporate300-dimensionalGloVe different baselines on CMU-MOSI dataset. Please see Ap-
+pendixA.4fordetails.
+embeddings[36].
+Visual Modality. We adopt the Facet toolkit to derive a Model TrainingTime Params
+35-dimensional vector of facial action unit (AU) features
+SelfMM 3.73h 121,835,723
+for each frame. The AU descriptors capture fine-grained
+GLoMo 2.29h 129,818,887
+facial muscle activations related to emotional expressions.
+EUAR 1.16h 110,436,422
+Forutterance-levelfeatures,theAUsequencesarefirsttem-
+EBMC 1.04h 112,320,746
+porallyalignedwiththetextandaudiostreamsandthenag- online
+EBMC 5min 6,384,400
+gregatedusingmeanpooling. offline
+Acoustic Modality. We use the COVAREP toolkit [6] InMSD,theshared–specificdecompositionrequirestwo
+to extract 74-dimensional low-level descriptors, including forward passes through modality-dependent MLPs, result-
+glottal source parameters, prosodic cues, spectral features, ing in a cost of O(T d h ). The invariant alignment
+m m m
+and other physiologically interpretable features. Frame- term based on InfoNCE further introduces a complexity
+level features are resampled to match the temporal res- of O(|M|T d ) due to pairwise similarities and soft-
+m m
+olution of other modalities before being aggregated into max normalization, while the decorrelation of modality-
+utterance-levelrepresentations. specificcomponentsincursanadditionalO(|M|2d )com-
+m
+plexity through cosine-similarity computations. In CCE,
+TrainingSetup. AllhyperparametersinEBMCaretuned
+the enhancement network G operates on compact aggre-
+m
+on the validation set. Unless otherwise specified, we set
+gatedvectorsandthereforecontributesonlyO(d h )per
+m m
+λ ,λ ,β,γ,η = 0.1andζ = 0.5, whichprovidesastable
+1 2 modality. EMC consists solely of vector norms, entropy
+balanceamongreconstruction,semanticenhancement,and
+terms, energy differences, and energy gradients such as
+modalitycollaborationobjectives. ∥z ∥2,H(p ),and(E(m )−E(m ))2,eachofwhichis
+EachstageoftheEBMCframeworkistrainedindepen- com m pu 2 tedin T O m (d )time. IM i TDcom j putesvariances,con-
+m
+dently,andwetailorthebatchsizeandtrainingscheduleto fidencescores,andKLdivergencetermsinO(T d )time
+m m
+thecharacteristicsofeachdataset. Unlessotherwisespeci- withoutintroducingadditionalnonlineartransformations.
+fied,thelearningrateisfixedat0.0001,whichwefoundto Summing over all modalities yields the total computa-
+provide stable convergence across all datasets. For CMU- tionalcomplexityofEBMC:
+MOSEI, due to its large scale and substantial modality di-
+(cid:32) (cid:33)
+versity, we adopt a batch size of 32. The full model is
+trained for 200 epochs, with 100 epochs allocated to each O (cid:88)(cid:2) T m d m h m +|M|T m d m +|M|2d m (cid:3) , (19)
+stageofEBMC.ForCMU-MOSI,whichissmallerbutstill m
+rich in modality-specific variations, we use a batch size
+which is dominated by the linear-time operations in MSD.
+of 64 to accelerate training. The model is trained for 300
+SinceEMCandIMTDconsistexclusivelyofelement-wise
+epochs,with150epochsperstage,ensuringadequateopti-
+algebraic operations, they contribute negligible overhead
+mizationinboththeenhancementandcollaborationphases.
+relative to the backbone encoders and do not introduce
+For IEMOCAP, given its limited size and higher speaker
+attention-likequadraticcostsatanystageoftheframework.
+variability,wereducethebatchsizeto16tomaintainstable
+gradientestimates. Eachstageoftheframeworkistrained A.4. Empirical Training Efficiency and Parameter
+for 150 epochs, providing a balanced schedule that avoids Comparison
+overfitting while ensuring sufficient convergence. All ex-
+InadditiontothetheoreticalanalysisinAppendixA.3,we
+perimentsareconductedonaworkstationequippedwithan
+further report the empirical training efficiency of EBMC
+NVIDIARTX4090GPU(48GB).Trainingisimplemented
+and other baselines in Tab. 6. All results are measured
+in PyTorch with mixed-precision acceleration enabled by
+ontheCMU-MOSIdatasetbytrainingeachmodelfor300
+default.
+epochs,ensuringafaircomparisonacrossmethods.
+When EBMC is trained in the standard online set-
+A.3.ComputationalCostandComplexityAnalysis
+ting—where raw inputs are loaded on-the-fly and each
+ThecomputationalcomplexityofEBMCcanbederiveddi- batch requires passing all modalities through BERT-based
+rectlyfromtheoperationsdefinedinMSD,CCE,EMC,and encoders—theend-to-endtrainingtakesapproximately1.2
+IMTD.LetT andd denotethetemporallengthandfea- hours, and the full system consists of 112,320,746 pa-
+m m
+ture dimension of modality m, and let h be the hidden rameters, most of which originate from the Transformer
+m
+widthofthelightweightMLPs. encoders. In contrast, if multimodal features are pre-
+
+===== PAGE 14 =====
+extracted offline and cached on disk, the training pipeline EMC adopts the deterministic gradient-descent compo-
+no longer depends on the heavy BERT encoders. Under nentatthemodalitylevel:
+this offline-feature configuration, EBMC reduces to only
+thelightweightMSD,CCE,EMC,andIMTDmodules,re- ∂E(m)
+∆z =−λ , (25)
+sulting in a compact model with merely 6,384,400 param- m ∂z m
+eters, andthetotaltrainingtimefor300epochsdropsdra-
+which can be interpreted as a single-step Langevin gradi-
+maticallytoaround5minutes.
+entflowontheenergymanifold,restrictedtothemodality-
+Thiscomparisonhighlightsthatthemajorityofcompu-
+specificpotentialE(m). ThisestablishesaprincipledEBM
+tational overhead in multimodal sentiment models stems
+interpretationoftheEMCtrainingdynamics.
+from online text encoding, and that EBMC itself remains
+lightweight and efficient when decoupled from the feature
+B.2.RelationtoGradient-balancingApproaches
+extractor.
+Equivalence in Form. Traditional gradient-balancing
+B. Theoretical Foundations of Energy-guided methodsmodifyper-modalitygradientsvia
+ModalityCoordination(EMC)
+gnew =w g , (26)
+m m m
+This appendix provides a rigorous theoretical formula-
+tionoftheproposedEnergy-guidedModalityCoordination where g is the original gradient and w is an explicitly
+m m
+module. Wefirstestablishitsinterpretationasastructured designed weight. In contrast, EMC introduces an energy-
+Energy-based Model (EBM), then analyze its connection gaploss:
+and distinction from traditional gradient-balancing meth-
+ods, followed by a dynamical perspective on the induced L = (cid:88) (cid:0) E(m)−E(m′) (cid:1)2 . (27)
+gap
+energy dynamics, and finally present the full gradients of m<m′
+theEMCobjective.
+Takingthederivativew.r.t.z gives
+m
+B.1.FromModalityEnergytoEnergy-basedModel
+For each modality m, the main paper defines a modality- ∂L gap =2 (cid:88) (E(m)−E(m′)) ∂E(m) . (28)
+specificenergypotential: ∂z m ∂z m
+m′̸=m
+E(m)=α∥z ∥2+βℓ +γu , (20)
+m 2 m m LettingE¯ = 1 (cid:80) E(k),weobserve
+|M| k∈M
+where z is the latent representation, ℓ is the modality-
+m m
+specificloss,andu m denotespredictiveuncertainty: (cid:88) (E(m)−E(m′))=|M| (cid:0) E(m)−E¯(cid:1) , (29)
+u =E (cid:2) H (cid:0) pi (y) (cid:1)(cid:3) , H(p)=− (cid:88) p(y)logp(y). m′̸=m
+m i Tm
+y
+(21) whichimpliesanimplicit,energy-awareweightoftheform
+JointMultimodalEnergy. LetM denotethesetofmodal- wEMC ∝E(m)−E¯. (30)
+ities. Wedefinetheglobalmultimodalenergyas: m
+E = (cid:88) E(m)+η (cid:88) (cid:0) E(m)−E(m′) (cid:1)2 , (22) Hence EMC behaves as an energy-aware gradient modu-
+joint
+lator whose weights are not manually chosen but emerge
+m∈M m<m′
+fromtheenergy-gapobjective.
+where the second term encourages energy equilibrium
+Fundamental Difference. Unlike explicit gradient-
+acrossmodalitiesbypenalizingpairwiseenergygaps.
+balancing heuristics, EMC introduces a global energy po-
+Thejointdistributionofallmodalityrepresentationsthen
+tentialandoptimizesthesystemviaitsgradientflow. Thus,
+formsaGibbsdistribution:
+modality correction emerges naturally from the energy
+exp(−E ({z }))
+p ({z })= joint m , (23) equilibriumratherthanmanualgradientmanipulation.
+θ m Z(θ)
+Formally,EMCoptimizes
+which establishes EMC as a structured EBM over multi-
+modalrepresentations. min L =L +δ (cid:88) ∥∇ E(m)∥2, (31)
+Energy-descentDynamics. ClassicalEBMlearningoften
+{zm}
+EMC gap
+m∈M
+zm
+involvesaLangevin-styleupdate:
+which is a well-defined and fully differentiable objective.
+zt+1 =zt−λ∇ E (zt)+ωt, ωt ∼N(0,λI). This grants EMC stronger theoretical grounding than ad-
+z joint
+(24) hocgradient-balancingrules.
+
+===== PAGE 15 =====
+ $ F F    0 $ (  $ F F    0 $ (  $ F F    0 $ (  $ F F    0 $ (
+                               
+ $ F F    $ F F    $ F F    $ F F  
+    0 $ (          0 $ (          0 $ (          0 $ (     
+                               
+                               
+                               
+                                                                                               
+Figure6. HyperparametersensitivityanalysisofEBMContheCMU-MOSEIdataset. Theeffectsofvaryingβ,γ,η,andζ areevaluated
+accordingtotheoveralltrainingobjectivedefinedinEq.(17),whilefixingtheremaininghyperparameterstothevaluesusedinourmain
+experiments.PleaserefertoAppendixC.1.
+B.3.DynamicalAnalysisofEMC At such points, all modalities lie in a balanced energy
+Let g = ∇ E(m) and again denote E¯ = configuration and each representation reaches a local en-
+1 (cid:80) m E(k). zm ergyminimum,correspondingtoastablemultimodalfusion
+|M| k∈M state.
+B.4.DerivativesofEMCComponents
+Negative-feedbackStructure. FromEq.(28),theEMC-
+induceddynamicsareproportionalto EnergyGradient. FromEq.(20),
+∆z ∝−
+(cid:0) E(m)−E¯(cid:1)
+g , (32) ∇ E(m)=2αz +β∇ ℓ +γ∇ u . (35)
+m m zm m zm m zm m
+up to a constant factor. This forms a classical negative-
+DerivativeofPredictiveUncertainty. Fortheentropy,
+feedbacksystem:
+-ifE(m)>E¯ (weakorunder-optimizedmodality),the ∂H(p)
+factor(E(m)−E¯)ispositive andthegradient magnitude ∂p(y) =−logp(y)−1. (36)
+iseffectivelyincreased→amplification;
+-ifE(m)<E¯ (dominantmodality),thefactorbecomes Thus:
+negative and the effective gradient is reduced → suppres- (cid:34) (cid:35)
+sion. ∇ u =E (cid:88)(cid:0) −logpi (y)−1 (cid:1) ∇ pi (y) .
+ThusEMCautomaticallystabilizesmodalityinteractions
+zm m i Tm zm Tm
+y
+byamplifyinghigh-energymodalitiesandsuppressinglow- (37)
+energyones. Ifpi (y)isproducedbysoftmaxlogitssi (y),wehave
+Tm m
+∂pi (y)
+Stability and Curvature Control. The regularization ∂s T i m (y′) =pi Tm (y) (cid:0)I y=y′ −pi Tm (y′) (cid:1) . (38)
+term δ (cid:80) ∥∇ E(m)∥2 introduces an additional depen- m
+m zm
+denceonthecurvatureofE(m).WritingH =∇2 E(m)
+m zm GradientoftheFullEMCObjective. ThefullEMCob-
+fortheHessian, thelocalsecond-orderbehaviorofL
+EMC jectivecanbewrittenas
+alongz containstermsoftheform
+m
+2∥g
+m
+∥2 and 2 (cid:0) E(m)−E¯(cid:1) H
+m
+, (33) L EMC = (cid:88) (cid:0) E(m)−E(m′) (cid:1)2 +δ (cid:88) ∥∇ zm E(m)∥2.
+m<m′ m∈M
+(39)
+uptohigher-orderderivatives. Intuitively,thefirsttermpe-
+Differentiatingw.r.t.z yields
+m
+nalizes large gradients and thus smooths sharp changes in
+the energy landscape, while the second term reduces cur- ∇ L =2 (cid:88) (cid:0) E(m)−E(m′) (cid:1) ∇ E(m)
+vature as modalities approach equilibrium, contributing to
+zm EMC zm
+m′̸=m
+stableoptimizationdynamics.
++2δH g , (40)
+m m
+Convergence. AstationarypointofEMCsatisfies where g m = ∇ zm E(m) and H m = ∇2 zm E(m). The first
+term enforces pairwise energy equilibrium, while the sec-
+E(m )=···=E(m ), ∇ E(m)=0, ∀m. ondtermregularizesthecurvatureoftheenergylandscape,
+1 |M| zm
+(34) jointlyensuringstablemultimodalcoordination.
+
+===== PAGE 16 =====
+(a) (b) (c) (d)
+Figure7. PerformancecurvesontheCMU-MOSIdatasetunderincreasingmodalitymissingrates. Thefoursubplotsrespectivelyreport
+F1,Acc-7,Corr,andMAEacrossallcomparedmodels. NotethatF1,Acc-7,andCorrarehigher-is-better metrics,whereasMAEisa
+lower-is-bettermetric.PleaserefertoSec.4.4(Q3)andAppendixC.3.
+(a) (b) (c) (d)
+Figure8.PerformancecurvesontheCMU-MOSEIdatasetunderincreasingmodalitymissingrates.Thefoursubplotsrespectivelyreport
+F1,Acc-7,Corr,andMAEacrossallcomparedmodels. NotethatF1,Acc-7,andCorrarehigher-is-better metrics,whereasMAEisa
+lower-is-bettermetric.PleaserefertoSec.4.4(Q3)andAppendixC.3.
+C.AdditionalExperimentsandAnalysis Table7. AblationofEMCenergycomponentsonCMU-MOSEI.
+WereportF1(↑),Acc-7(↑),andMAE(↓).RefertoAppendixC.2.
+C.1.Sensitivityanalysis
+F1(↑) Acc-7(↑) MAE(↓)
+WeevaluatethesensitivityofEBMCtothefourcoefficients
+inEq.(17). Eachcoefficientisvariedindependentlywhile EBMC 86.23/88.07 57.32 0.505
+keeping the others fixed, and we report Acc-7 and MAE w/o∥z ∥2 85.54/87.52 56.62 0.518
+m 2
+on CMU-MOSEI. As shown in Fig. 6, the coefficients β w/oℓ m 85.05/86.89 55.94 0.541
+(CCE), γ (EMC), and η (IMTD) all exhibit a consistent w/ou m 85.36/87.16 56.40 0.527
+trend: performance peaks at the moderate value of 0.1,
+achieving the best results. This suggests that a balanced
+levelofregularizationforthesethreeobjectivesismostef- Acc-7,andMAE),everyvariantthatremovesasinglecom-
+fective,whereasbothunder-andover-regularizationleadto ponentperformsworsethanthefullEBMCmodel,showing
+performancedrops.TheMSDcoefficientζfollowsadiffer- thateachtermcontributesauniqueandirreplaceableeffect.
+enttrend: performanceimprovesmonotonicallyuptoζ = Removing|z |2leadstoanoticeabledecline(e.g.,Acc-
+m 2
+0.5,wherethesameoptimalscoreisachieved,anddeclines
+7 drops from 57.32 to 56.62), indicating that the quadratic
+slightlyatζ =1.0. ThisindicatesthatMSDbenefitsfroma
+penaltyhelpsstabilizethelatentspaceandpreventsuncon-
+stronger weight, but excessive emphasis becomes counter-
+trolledshiftsinmodalityembeddings. Eliminatingtheloss-
+productive. Overall, EBMC demonstrates stable behavior
+coupling term ℓ results in the largest degradation (Acc-
+m
+acrossabroadhyperparameterrange,andtheconfiguration
+7=55.94), which aligns with its function of anchoring the
+usedinthemainexperiments(β = γ = η = 0.1, ζ = 0.5)
+energylandscapetotask-relevantsupervision. Omittingthe
+closelymatchestheempiricallyoptimalsetting.
+uncertainty term u also weakens performance, demon-
+m
+strating that entropy-based calibration is valuable for dis-
+C.2. Contribution of Energy-guided Modality Co-
+tinguishing reliable from unreliable modalities during en-
+ordination
+ergybalancing. Overall,theseresultsshowthatEMCisnot
+To better understand how each energy component con- a simple heuristic combination of losses; each component
+tributestoEMC,weperformanablationstudybyremoving makes a substantive contribution to effective multimodal
+one term at a time (Table 7). Across all three metrics (F1, coordination.
+
+===== PAGE 17 =====
+C.3.ExtendedRobustnessComparisonunderRan-
+domMissingRates
+Across Fig. 7 and Fig. 8, we observe a clear performance
+contrastbetweenEBMCandexistingbaselinesasthemiss-
+ing rate increases. Most baselines degrade rapidly once
+modality inputs become unreliable, revealing their strong
+dependence on fully observed data. In contrast, EBMC
+exhibits a noticeably smoother and more stable degrada-
+tion trend. This resilience is attributed to two principles:
+the disentanglement of shared and modality-specific fac-
+tors,whichpreventsexcessiverelianceonanysinglemodal-
+ity, andtheenhancement–then–balancemechanism, which
+maintains cross-modal semantic cues even when certain
+modalitiesfail.Asaresult,EBMCavoidsthemajority-class
+collapsecommonlyseeninothermethodsunderhighmiss-
+ingratesandretainsdiscriminativecapabilityacrossthefull
+corruptionspectrum.
+Anotherconsistentobservationisthatnearlyallmodels,
+includingEBMC,performbetteronCMU-MOSEIthanon
+CMU-MOSI under the same missing rate. This difference
+arises from MOSEI’s substantially larger scale and richer
+modalitydiversity,whichprovidestrongersupervisionand
+more stable temporal–semantic patterns. The additional
+data effectively buffers the impact of missing modalities,
+leadingtoimprovedrobustnessacrossmodels. EBMCben-
+efits from these properties while still maintaining a clear
+advantage over competing approaches on both datasets,
+demonstrating that its robustness generalizes across data
+regimesratherthanrelyingondataset-specificartifacts.

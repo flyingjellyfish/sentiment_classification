@@ -1,0 +1,15 @@
+# 本工作区本地产物，不进 Git（仓库根 .gitignore 已经忽略 *.pt/*.pth/*.ckpt 与 __pycache__）
+*.npz
+*.npy
+*.pt
+*.pth
+*.ckpt
+__pycache__/
+*.py[cod]
+p5_out.txt
+
+# 训练产物目录（checkpoint 与逐样本原始输出，约 714 MB，本地保留）
+exp/out/e8_ckpt/
+exp2/prmf_check/
+exp2/prmf_extra/
+exp2/prmf_innov/
