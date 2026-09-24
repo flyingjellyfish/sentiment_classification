@@ -1,0 +1,53 @@
+D:\work\math\huaweicup\�ڶ�ʮ�����й��о�����ѧ��ģ���� - ������Ŀ\������Ŀ\E��\EMOE_source\trains\subNets\transformers_encoder\position_embedding.py:18: UserWarning: The number of elements in the out tensor of shape [46] is 46 which does not match the computed number of elements 48. Note that this may occur as a result of rounding error. The out tensor will be resized to a tensor of shape (48,). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\cuda\RangeFactories.cu:261.)
+  torch.arange(padding_idx + 1, max_pos, out=getattr(make_positions, buf_name))
+D:\work\math\huaweicup\�ڶ�ʮ�����й��о�����ѧ��ģ���� - ������Ŀ\������Ŀ\E��\EMOE_source\trains\subNets\transformers_encoder\position_embedding.py:18: UserWarning: The number of elements in the out tensor of shape [48] is 48 which does not match the computed number of elements 50. Note that this may occur as a result of rounding error. The out tensor will be resized to a tensor of shape (50,). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\cuda\RangeFactories.cu:261.)
+  torch.arange(padding_idx + 1, max_pos, out=getattr(make_positions, buf_name))
+valid 16/728
+valid 32/728
+valid 48/728
+valid 64/728
+valid 80/728
+valid 96/728
+valid 112/728
+valid 128/728
+valid 144/728
+valid 160/728
+valid 176/728
+valid 192/728
+valid 208/728
+valid 224/728
+valid 240/728
+valid 256/728
+valid 272/728
+valid 288/728
+valid 304/728
+valid 320/728
+valid 336/728
+valid 352/728
+valid 368/728
+valid 384/728
+valid 400/728
+valid 416/728
+valid 432/728
+valid 448/728
+valid 464/728
+valid 480/728
+valid 496/728
+valid 512/728
+valid 528/728
+valid 544/728
+valid 560/728
+valid 576/728
+valid 592/728
+valid 608/728
+valid 624/728
+valid 640/728
+valid 656/728
+valid 672/728
+valid 688/728
+valid 704/728
+valid 720/728
+valid 728/728
+attachment4 16/20
+attachment4 20/20
+{"valid": {"accuracy": 0.6085164835164835, "f1_macro": 0.5826626864102699, "mae": 0.6287022233009338, "pearson": 0.6088014081411248}, "faithfulness": {"top3_mean_probability_drop": 0.22772665321826935, "random3_mean_probability_drop": 0.0127114187926054, "paired_difference_mean": 0.2150152176618576, "paired_difference_bootstrap95": [0.19935816302895545, 0.23183567225933074], "fraction_top3_exceeds_random3": 0.9285714285714286, "top3_mean_abs_reg_change": 0.227995365858078, "random3_mean_abs_reg_change": 0.073876291513443}, "router_ablation_agreement": 0.35027472527472525, "attachment4": 20, "out": "D:\\work\\math\\huaweicup\\�ڶ�ʮ�����й��о�����ѧ��ģ���� - ������Ŀ\\������Ŀ\\E��\\EMOE_repro\\results\\q3"}

@@ -1,0 +1,83 @@
+diff --git a/EMOE_repro/P_RMF_upstream/models/basic_layers.py b/EMOE_repro/P_RMF_upstream/models/basic_layers.py
+--- a/EMOE_repro/P_RMF_upstream/models/basic_layers.py
++++ b/EMOE_repro/P_RMF_upstream/models/basic_layers.py
+@@ -127,7 +127,7 @@
+         k = self.norm_k(k)
+         v = self.norm_v(v)
+ 
+-        return self.fn(q, k, v)
++        return self.fn(q, k, v, **kwargs)
+ 
+ 
+ class FeedForward(nn.Module):
+@@ -163,7 +163,7 @@
+             nn.Dropout(dropout)
+         ) if project_out else nn.Identity()
+ 
+-    def forward(self, q, k, v):
++    def forward(self, q, k, v, key_mask=None):
+         b, n, _, h = *q.shape, self.heads
+ 
+         q = self.to_q(q)
+@@ -172,6 +172,11 @@
+ 
+         q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h=h), (q, k, v))
+         dots = einsum('b h i d, b h j d -> b h i j', q, k) * self.scale
++        if key_mask is not None:
++            if key_mask.shape != (b, k.shape[2]):
++                raise ValueError('key_mask must have shape B x key_length')
++            dots = dots.masked_fill(~key_mask[:, None, None, :].bool(),
++                                    torch.finfo(dots.dtype).min)
+ 
+         attn = self.attend(dots)
+ 
+@@ -191,18 +196,18 @@
+                 PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
+             ]))
+ 
+-    def forward(self, x, save_hidden=False):
++    def forward(self, x, save_hidden=False, key_mask=None):
+         if save_hidden == True:
+             hidden_list = []
+             hidden_list.append(x)
+             for attn, ff in self.layers:
+-                x = attn(x, x, x) + x
++                x = attn(x, x, x, key_mask=key_mask) + x
+                 x = ff(x) + x
+                 hidden_list.append(x)
+             return hidden_list
+         else:
+             for attn, ff in self.layers:
+-                x = attn(x, x, x) + x
++                x = attn(x, x, x, key_mask=key_mask) + x
+                 x = ff(x) + x
+             return x
+ 
+@@ -269,17 +274,25 @@
+         self.to_latent = nn.Identity()
+ 
+ 
+-    def forward(self, x):
++    def forward(self, x, key_mask=None):
+         b, n, _ = x.shape
+ 
+         if self.token_len is not None:
+             extra_token = repeat(self.extra_token, '1 n d -> b n d', b = b)
+             x = torch.cat((extra_token, x), dim=1)
+             x = x + self.pos_embedding[:, :n+self.token_len]
++            if key_mask is not None:
++                if key_mask.shape != (b, n):
++                    raise ValueError('key_mask must have shape B x input_length')
++                key_mask = torch.cat((torch.ones(
++                    b, self.token_len, dtype=torch.bool, device=x.device),
++                    key_mask.bool()), dim=1)
+         else:
+             x = x + self.pos_embedding[:, :n]
++            if key_mask is not None and key_mask.shape != (b, n):
++                raise ValueError('key_mask must have shape B x input_length')
+ 
+         x = self.dropout(x)
+-        x = self.encoder(x, self.save_hidden)
++        x = self.encoder(x, self.save_hidden, key_mask=key_mask)
+ 
+         return x

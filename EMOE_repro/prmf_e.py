@@ -37,12 +37,22 @@ def prmf_config():
 class PRMFE(nn.Module):
     """Author's P-RMF architecture, with E Q2 input and dual-task outputs."""
 
-    def __init__(self, cfg=None, *, missing_embedding=False, coverage_gate=False):
+    def __init__(self, cfg=None, *, missing_embedding=False, coverage_gate=False,
+                 zero_padding=False, split_text_head=False,
+                 masked_attention=False, coupled_head=False,
+                 local_recovery=False):
         super().__init__()
         cfg = prmf_config() if cfg is None else cfg
         self.cfg = cfg
         self.use_missing_embedding = missing_embedding
         self.use_coverage_gate = coverage_gate
+        self.zero_padding = zero_padding
+        self.split_text_head = split_text_head
+        self.masked_attention = masked_attention
+        self.coupled_head = coupled_head
+        self.local_recovery = local_recovery
+        if masked_attention and local_recovery:
+            raise ValueError("masked_attention and local_recovery are separate ablations")
         feature = cfg["model"]["feature_extractor"]
 
         def projection(index):
@@ -78,43 +88,151 @@ class PRMFE(nn.Module):
         self.fc2 = nn.Linear(regression["hidden_dim"], 1)
         self.dropout = nn.Dropout(regression["attn_dropout"])
         self.cls_head = nn.Linear(regression["input_dim"], 3)
+        if coupled_head:
+            # A small nonlinear bridge from the regression prediction to the
+            # three polarity logits. Zero init reproduces the original head
+            # before training; CE can still update the shared valence estimate.
+            self.cls_from_reg = nn.Linear(2, 3, bias=False)
+            nn.init.zeros_(self.cls_from_reg.weight)
+        if split_text_head:
+            self.cls_head_text_missing = nn.Linear(regression["input_dim"], 3)
+            self.cls_head_text_missing.load_state_dict(self.cls_head.state_dict())
         # E-question variants only. Zero initialization preserves the baseline
         # at step zero and consumes no RNG for the shared author-core layers.
         if missing_embedding:
             self.missing_embedding = nn.Parameter(torch.zeros(3, feature["hidden_dims"][0]))
         if coverage_gate:
             self.coverage_beta = nn.Parameter(torch.zeros(()))
+        if local_recovery:
+            hidden = feature["hidden_dims"][0]
+            self.local_recovery_net = nn.Sequential(
+                nn.Conv1d(3 * hidden + 3, hidden, kernel_size=3, padding=1),
+                nn.GELU(),
+                nn.Conv1d(hidden, 3 * hidden, kernel_size=1))
+            nn.init.zeros_(self.local_recovery_net[-1].weight)
+            nn.init.zeros_(self.local_recovery_net[-1].bias)
 
     def forward(self, text, audio, vision, observed_mask, complete_for_aux=False,
-                valid_lengths=None):
+                valid_lengths=None, complete_text=None):
         if text.ndim != 3 or tuple(text.shape[1:]) != (50, 768):
             raise ValueError("Text must be B×50×768 aligned continuous features")
         if audio.shape != (len(text), 50, 74) or vision.shape != (len(text), 50, 35):
             raise ValueError("Audio/Vision must be B×50×74 and B×50×35")
         if observed_mask.shape != (len(text), 3, 50):
             raise ValueError("observed_mask must be B×3×50, L/V/A order")
+        if self.zero_padding:
+            if valid_lengths is None or valid_lengths.shape != (len(text),):
+                raise ValueError("zero_padding requires B effective lengths")
+            positions = torch.arange(50, device=text.device)[None, :]
+            valid = positions < valid_lengths[:, None]
+            if self.zero_padding == "text_missing":
+                content = (positions >= 1) & (positions < valid_lengths[:, None] - 1)
+                text_missing = ((~observed_mask[:, 0].bool()) & content).any(dim=1)
+                valid = valid | ~text_missing[:, None]
+            valid = valid.to(text.dtype)[:, :, None]
+            text = text * valid
+            audio = audio * valid
+            vision = vision * valid
+            if complete_text is not None:
+                complete_text = complete_text * valid
         # Original P-RMF represents removed features by zero; unlike EMOE it
         # has no explicit missing token. The same input mask is shared by both.
         incomplete_l = text * observed_mask[:, 0, :, None]
         incomplete_v = vision * observed_mask[:, 1, :, None]
         incomplete_a = audio * observed_mask[:, 2, :, None]
-        if self.use_missing_embedding:
+        key_masks = None
+        complete_key_masks = None
+        if self.masked_attention:
+            if valid_lengths is None or valid_lengths.shape != (len(text),):
+                raise ValueError("masked_attention requires B effective lengths")
+            positions = torch.arange(50, device=text.device)[None, :]
+            in_length = positions < valid_lengths[:, None]
+            key_masks = tuple(observed_mask[:, channel].bool() & in_length
+                              for channel in range(3))
+            if complete_for_aux:
+                complete_key_masks = (
+                    in_length,
+                    in_length & vision.abs().sum(dim=-1).ne(0),
+                    in_length & audio.abs().sum(dim=-1).ne(0),
+                )
+        local_rec_loss = None
+        if self.local_recovery:
+            observed = observed_mask.bool()
+            projected = (self.proj_l[0](incomplete_l),
+                         self.proj_v[0](incomplete_v),
+                         self.proj_a[0](incomplete_a))
+            local_input = torch.cat(
+                [projected[channel] * observed[:, channel, :, None]
+                 for channel in range(3)] +
+                [observed.transpose(1, 2).to(text.dtype)], dim=-1)
+            delta = self.local_recovery_net(
+                local_input.transpose(1, 2)).transpose(1, 2).chunk(3, dim=-1)
+            restored = tuple(projected[channel] +
+                             (~observed[:, channel, :, None]) * delta[channel]
+                             for channel in range(3))
+            h_l = self.proj_l[1](restored[0])[:, :8]
+            h_v = self.proj_v[1](restored[1])[:, :8]
+            h_a = self.proj_a[1](restored[2])[:, :8]
+            if complete_for_aux:
+                if valid_lengths is None:
+                    raise ValueError("local recovery loss requires valid lengths")
+                positions = torch.arange(50, device=text.device)[None, :]
+                in_length = positions < valid_lengths[:, None]
+                source_text = text if complete_text is None else complete_text
+                available = torch.stack((
+                    in_length,
+                    in_length & vision.abs().sum(dim=-1).ne(0),
+                    in_length & audio.abs().sum(dim=-1).ne(0)), dim=1)
+                supervised_missing = (~observed) & available
+                target_projected = (
+                    self.proj_l[0](source_text),
+                    self.proj_v[0](vision),
+                    self.proj_a[0](audio))
+                squared = torch.stack([
+                    (restored[channel].float() -
+                     target_projected[channel].detach().float()).square()
+                    for channel in range(3)], dim=1)
+                local_rec_loss = (
+                    (squared * supervised_missing[:, :, :, None]).sum() /
+                    (supervised_missing.sum().clamp_min(1) * squared.shape[-1]))
+        elif self.use_missing_embedding:
             def encode(proj, values, mask, channel):
                 projected = proj[0](values)
                 projected = projected + (~mask).to(projected.dtype)[..., None] * self.missing_embedding[channel]
-                return proj[1](projected)[:, :8]
+                return proj[1](projected,
+                               key_mask=None if key_masks is None else key_masks[channel])[:, :8]
 
             h_l = encode(self.proj_l, incomplete_l, observed_mask[:, 0], 0)
             h_v = encode(self.proj_v, incomplete_v, observed_mask[:, 1], 1)
             h_a = encode(self.proj_a, incomplete_a, observed_mask[:, 2], 2)
         else:
-            h_l = self.proj_l(incomplete_l)[:, :8]
-            h_v = self.proj_v(incomplete_v)[:, :8]
-            h_a = self.proj_a(incomplete_a)[:, :8]
+            if key_masks is None:
+                h_l = self.proj_l(incomplete_l)[:, :8]
+                h_v = self.proj_v(incomplete_v)[:, :8]
+                h_a = self.proj_a(incomplete_a)[:, :8]
+            else:
+                h_l = self.proj_l[1](self.proj_l[0](incomplete_l),
+                                       key_mask=key_masks[0])[:, :8]
+                h_v = self.proj_v[1](self.proj_v[0](incomplete_v),
+                                       key_mask=key_masks[1])[:, :8]
+                h_a = self.proj_a[1](self.proj_a[0](incomplete_a),
+                                       key_mask=key_masks[2])[:, :8]
         if complete_for_aux:
-            c_l = self.proj_l(text)[:, :8]
-            c_v = self.proj_v(vision)[:, :8]
-            c_a = self.proj_a(audio)[:, :8]
+            # When missing tokens are re-encoded by BERT, the corrupted text
+            # representation differs at *all* positions. Keep the auxiliary
+            # reconstruction target on the original complete representation.
+            if complete_key_masks is None:
+                c_l = self.proj_l(text if complete_text is None else complete_text)[:, :8]
+                c_v = self.proj_v(vision)[:, :8]
+                c_a = self.proj_a(audio)[:, :8]
+            else:
+                source_text = text if complete_text is None else complete_text
+                c_l = self.proj_l[1](self.proj_l[0](source_text),
+                                       key_mask=complete_key_masks[0])[:, :8]
+                c_v = self.proj_v[1](self.proj_v[0](vision),
+                                       key_mask=complete_key_masks[1])[:, :8]
+                c_a = self.proj_a[1](self.proj_a[0](audio),
+                                       key_mask=complete_key_masks[2])[:, :8]
         else:
             c_l = c_v = c_a = None
         kl_loss, proxy, weights = self.generate_proxy_modality(
@@ -135,6 +253,17 @@ class PRMFE(nn.Module):
         summary = fused.mean(dim=1)
         regression = self.fc2(self.dropout(F.relu(self.fc1(summary))))
         cls_logits = self.cls_head(summary)
+        if self.coupled_head:
+            valence = torch.cat((regression, regression.abs()), dim=1)
+            cls_logits = cls_logits + self.cls_from_reg(valence)
+        if self.split_text_head:
+            if valid_lengths is None or valid_lengths.shape != (len(text),):
+                raise ValueError("split_text_head requires B effective lengths")
+            positions = torch.arange(50, device=text.device)[None, :]
+            content = (positions >= 1) & (positions < valid_lengths[:, None] - 1)
+            text_missing = ((~observed_mask[:, 0].bool()) & content).any(dim=1)
+            missing_logits = self.cls_head_text_missing(summary)
+            cls_logits = torch.where(text_missing[:, None], missing_logits, cls_logits)
         reconstruction = target = None
         if complete_for_aux:
             r_a = self.reconstructor[0](h_a)[:, :8]
@@ -145,4 +274,5 @@ class PRMFE(nn.Module):
         return {"cls_logits": cls_logits, "logits_c": regression,
                 "kl_loss": kl_loss, "rec_feats": reconstruction,
                 "complete_feats": target, "uncertainty_weights_LVA": weights,
-                "coverage_beta": self.coverage_beta if self.use_coverage_gate else None}
+                "coverage_beta": self.coverage_beta if self.use_coverage_gate else None,
+                "local_rec_loss": local_rec_loss}

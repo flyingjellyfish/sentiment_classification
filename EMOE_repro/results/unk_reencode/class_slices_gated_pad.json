@@ -1,0 +1,962 @@
+[
+  {
+    "scenario": "clean",
+    "seed": 1111,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        135,
+        31,
+        40
+      ],
+      [
+        27,
+        67,
+        90
+      ],
+      [
+        37,
+        37,
+        264
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6553398058252428,
+      0.3641304347826087,
+      0.7810650887573964
+    ],
+    "precision_negative_neutral_positive": [
+      0.678391959798995,
+      0.4962962962962963,
+      0.6700507614213198
+    ]
+  },
+  {
+    "scenario": "clean",
+    "seed": 1111,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        141,
+        26,
+        39
+      ],
+      [
+        29,
+        73,
+        82
+      ],
+      [
+        42,
+        38,
+        258
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6844660194174758,
+      0.3967391304347826,
+      0.7633136094674556
+    ],
+    "precision_negative_neutral_positive": [
+      0.6650943396226415,
+      0.5328467153284672,
+      0.6807387862796834
+    ]
+  },
+  {
+    "scenario": "clean",
+    "seed": 2222,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        154,
+        27,
+        25
+      ],
+      [
+        40,
+        76,
+        68
+      ],
+      [
+        51,
+        54,
+        233
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7475728155339806,
+      0.41304347826086957,
+      0.6893491124260355
+    ],
+    "precision_negative_neutral_positive": [
+      0.6285714285714286,
+      0.4840764331210191,
+      0.7147239263803681
+    ]
+  },
+  {
+    "scenario": "clean",
+    "seed": 2222,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        158,
+        19,
+        29
+      ],
+      [
+        47,
+        54,
+        83
+      ],
+      [
+        57,
+        36,
+        245
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7669902912621359,
+      0.29347826086956524,
+      0.7248520710059172
+    ],
+    "precision_negative_neutral_positive": [
+      0.6030534351145038,
+      0.4954128440366973,
+      0.6862745098039216
+    ]
+  },
+  {
+    "scenario": "clean",
+    "seed": 3333,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        161,
+        19,
+        26
+      ],
+      [
+        45,
+        67,
+        72
+      ],
+      [
+        61,
+        38,
+        239
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7815533980582524,
+      0.3641304347826087,
+      0.7071005917159763
+    ],
+    "precision_negative_neutral_positive": [
+      0.602996254681648,
+      0.5403225806451613,
+      0.7091988130563798
+    ]
+  },
+  {
+    "scenario": "clean",
+    "seed": 3333,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        151,
+        24,
+        31
+      ],
+      [
+        37,
+        71,
+        76
+      ],
+      [
+        42,
+        43,
+        253
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7330097087378641,
+      0.3858695652173913,
+      0.7485207100591716
+    ],
+    "precision_negative_neutral_positive": [
+      0.6565217391304348,
+      0.5144927536231884,
+      0.7027777777777777
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        129,
+        23,
+        54
+      ],
+      [
+        43,
+        58,
+        83
+      ],
+      [
+        51,
+        35,
+        252
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6262135922330098,
+      0.31521739130434784,
+      0.7455621301775148
+    ],
+    "precision_negative_neutral_positive": [
+      0.57847533632287,
+      0.5,
+      0.6478149100257069
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 1111,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        143,
+        14,
+        49
+      ],
+      [
+        49,
+        42,
+        93
+      ],
+      [
+        48,
+        28,
+        262
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6941747572815534,
+      0.22826086956521738,
+      0.7751479289940828
+    ],
+    "precision_negative_neutral_positive": [
+      0.5958333333333333,
+      0.5,
+      0.6485148514851485
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 2222,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        149,
+        33,
+        24
+      ],
+      [
+        60,
+        82,
+        42
+      ],
+      [
+        71,
+        77,
+        190
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7233009708737864,
+      0.44565217391304346,
+      0.5621301775147929
+    ],
+    "precision_negative_neutral_positive": [
+      0.5321428571428571,
+      0.4270833333333333,
+      0.7421875
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 2222,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        142,
+        21,
+        43
+      ],
+      [
+        50,
+        50,
+        84
+      ],
+      [
+        54,
+        38,
+        246
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6893203883495146,
+      0.2717391304347826,
+      0.727810650887574
+    ],
+    "precision_negative_neutral_positive": [
+      0.5772357723577236,
+      0.45871559633027525,
+      0.6595174262734584
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 3333,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        140,
+        13,
+        53
+      ],
+      [
+        48,
+        45,
+        91
+      ],
+      [
+        57,
+        28,
+        253
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6796116504854369,
+      0.24456521739130435,
+      0.7485207100591716
+    ],
+    "precision_negative_neutral_positive": [
+      0.5714285714285714,
+      0.5232558139534884,
+      0.6372795969773299
+    ]
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 3333,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        147,
+        2,
+        57
+      ],
+      [
+        69,
+        10,
+        105
+      ],
+      [
+        62,
+        9,
+        267
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7135922330097088,
+      0.05434782608695652,
+      0.7899408284023669
+    ],
+    "precision_negative_neutral_positive": [
+      0.5287769784172662,
+      0.47619047619047616,
+      0.6223776223776224
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 1111,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        136,
+        15,
+        55
+      ],
+      [
+        50,
+        38,
+        96
+      ],
+      [
+        84,
+        38,
+        216
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6601941747572816,
+      0.20652173913043478,
+      0.6390532544378699
+    ],
+    "precision_negative_neutral_positive": [
+      0.5037037037037037,
+      0.4175824175824176,
+      0.5885558583106267
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 1111,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        137,
+        15,
+        54
+      ],
+      [
+        55,
+        37,
+        92
+      ],
+      [
+        70,
+        25,
+        243
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6650485436893204,
+      0.20108695652173914,
+      0.7189349112426036
+    ],
+    "precision_negative_neutral_positive": [
+      0.5229007633587787,
+      0.4805194805194805,
+      0.6246786632390745
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 2222,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        170,
+        19,
+        17
+      ],
+      [
+        79,
+        65,
+        40
+      ],
+      [
+        111,
+        69,
+        158
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.8252427184466019,
+      0.3532608695652174,
+      0.46745562130177515
+    ],
+    "precision_negative_neutral_positive": [
+      0.4722222222222222,
+      0.42483660130718953,
+      0.7348837209302326
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 2222,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        129,
+        24,
+        53
+      ],
+      [
+        42,
+        45,
+        97
+      ],
+      [
+        48,
+        47,
+        243
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6262135922330098,
+      0.24456521739130435,
+      0.7189349112426036
+    ],
+    "precision_negative_neutral_positive": [
+      0.589041095890411,
+      0.3879310344827586,
+      0.6183206106870229
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 3333,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        147,
+        6,
+        53
+      ],
+      [
+        62,
+        18,
+        104
+      ],
+      [
+        84,
+        14,
+        240
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7135922330097088,
+      0.09782608695652174,
+      0.7100591715976331
+    ],
+    "precision_negative_neutral_positive": [
+      0.5017064846416383,
+      0.47368421052631576,
+      0.6045340050377834
+    ]
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 3333,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        153,
+        1,
+        52
+      ],
+      [
+        77,
+        6,
+        101
+      ],
+      [
+        85,
+        3,
+        250
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7427184466019418,
+      0.03260869565217391,
+      0.7396449704142012
+    ],
+    "precision_negative_neutral_positive": [
+      0.4857142857142857,
+      0.6,
+      0.6203473945409429
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        128,
+        25,
+        53
+      ],
+      [
+        42,
+        57,
+        85
+      ],
+      [
+        48,
+        41,
+        249
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6213592233009708,
+      0.30978260869565216,
+      0.7366863905325444
+    ],
+    "precision_negative_neutral_positive": [
+      0.5871559633027523,
+      0.4634146341463415,
+      0.6434108527131783
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 1111,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        142,
+        16,
+        48
+      ],
+      [
+        49,
+        44,
+        91
+      ],
+      [
+        46,
+        30,
+        262
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6893203883495146,
+      0.2391304347826087,
+      0.7751479289940828
+    ],
+    "precision_negative_neutral_positive": [
+      0.5991561181434599,
+      0.4888888888888889,
+      0.6533665835411472
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 2222,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        144,
+        39,
+        23
+      ],
+      [
+        56,
+        86,
+        42
+      ],
+      [
+        67,
+        81,
+        190
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6990291262135923,
+      0.4673913043478261,
+      0.5621301775147929
+    ],
+    "precision_negative_neutral_positive": [
+      0.5393258426966292,
+      0.4174757281553398,
+      0.7450980392156863
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 2222,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        141,
+        25,
+        40
+      ],
+      [
+        49,
+        53,
+        82
+      ],
+      [
+        49,
+        42,
+        247
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6844660194174758,
+      0.28804347826086957,
+      0.7307692307692307
+    ],
+    "precision_negative_neutral_positive": [
+      0.5899581589958159,
+      0.44166666666666665,
+      0.6693766937669376
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 3333,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        138,
+        15,
+        53
+      ],
+      [
+        43,
+        47,
+        94
+      ],
+      [
+        53,
+        29,
+        256
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6699029126213593,
+      0.2554347826086957,
+      0.757396449704142
+    ],
+    "precision_negative_neutral_positive": [
+      0.5897435897435898,
+      0.5164835164835165,
+      0.6352357320099256
+    ]
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 3333,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        140,
+        3,
+        63
+      ],
+      [
+        57,
+        11,
+        116
+      ],
+      [
+        54,
+        7,
+        277
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6796116504854369,
+      0.059782608695652176,
+      0.8195266272189349
+    ],
+    "precision_negative_neutral_positive": [
+      0.5577689243027888,
+      0.5238095238095238,
+      0.6074561403508771
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 1111,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        131,
+        22,
+        53
+      ],
+      [
+        43,
+        44,
+        97
+      ],
+      [
+        81,
+        40,
+        217
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6359223300970874,
+      0.2391304347826087,
+      0.6420118343195266
+    ],
+    "precision_negative_neutral_positive": [
+      0.5137254901960784,
+      0.41509433962264153,
+      0.5912806539509536
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 1111,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        134,
+        16,
+        56
+      ],
+      [
+        48,
+        47,
+        89
+      ],
+      [
+        62,
+        33,
+        243
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6504854368932039,
+      0.2554347826086957,
+      0.7189349112426036
+    ],
+    "precision_negative_neutral_positive": [
+      0.5491803278688525,
+      0.4895833333333333,
+      0.6262886597938144
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 2222,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        154,
+        31,
+        21
+      ],
+      [
+        66,
+        78,
+        40
+      ],
+      [
+        99,
+        86,
+        153
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.7475728155339806,
+      0.42391304347826086,
+      0.4526627218934911
+    ],
+    "precision_negative_neutral_positive": [
+      0.4827586206896552,
+      0.4,
+      0.7149532710280374
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 2222,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        121,
+        32,
+        53
+      ],
+      [
+        35,
+        58,
+        91
+      ],
+      [
+        41,
+        53,
+        244
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.587378640776699,
+      0.31521739130434784,
+      0.7218934911242604
+    ],
+    "precision_negative_neutral_positive": [
+      0.6142131979695431,
+      0.40559440559440557,
+      0.6288659793814433
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 3333,
+    "method": "baseline",
+    "confusion_matrix": [
+      [
+        136,
+        7,
+        63
+      ],
+      [
+        44,
+        23,
+        117
+      ],
+      [
+        65,
+        20,
+        253
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6601941747572816,
+      0.125,
+      0.7485207100591716
+    ],
+    "precision_negative_neutral_positive": [
+      0.5551020408163265,
+      0.46,
+      0.5842956120092379
+    ]
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 3333,
+    "method": "gated_pad",
+    "confusion_matrix": [
+      [
+        135,
+        2,
+        69
+      ],
+      [
+        60,
+        9,
+        115
+      ],
+      [
+        59,
+        3,
+        276
+      ]
+    ],
+    "recall_negative_neutral_positive": [
+      0.6553398058252428,
+      0.04891304347826087,
+      0.8165680473372781
+    ],
+    "precision_negative_neutral_positive": [
+      0.531496062992126,
+      0.6428571428571429,
+      0.6
+    ]
+  }
+]

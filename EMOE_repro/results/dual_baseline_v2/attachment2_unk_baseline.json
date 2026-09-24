@@ -1,0 +1,29 @@
+{
+  "train": {
+    "n_samples": 3395,
+    "unk_samples": 0,
+    "unk_content_slots": 0,
+    "unk_and_audio_zero_slots": 0,
+    "unk_and_vision_zero_slots": 0,
+    "all_three_exactly_same_samples": 2974,
+    "all_three_missing_same_nonempty_samples": 0
+  },
+  "valid": {
+    "n_samples": 728,
+    "unk_samples": 0,
+    "unk_content_slots": 0,
+    "unk_and_audio_zero_slots": 0,
+    "unk_and_vision_zero_slots": 0,
+    "all_three_exactly_same_samples": 643,
+    "all_three_missing_same_nonempty_samples": 0
+  },
+  "test": {
+    "n_samples": 727,
+    "unk_samples": 0,
+    "unk_content_slots": 0,
+    "unk_and_audio_zero_slots": 0,
+    "unk_and_vision_zero_slots": 0,
+    "all_three_exactly_same_samples": 628,
+    "all_three_missing_same_nonempty_samples": 0
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "checkpoint": "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\q2\\refined\\full.pt",
+  "n_valid": 728,
+  "n_eligible_samples": 684,
+  "no_matched_alternative_by_modality": {
+    "Text": 101,
+    "Vision": 112,
+    "Audio": 105
+  },
+  "interventions": [
+    "zero feature",
+    "matched-class similar-length donor feature"
+  ],
+  "observed_mask_unchanged": true,
+  "selection": "original Q3 chosen windows under missing-token mask",
+  "controls": "3 random, same modality and window length, no singleton fallback",
+  "paired_top_minus_random": {
+    "zero": {
+      "probability_drop": {
+        "mean": 0.2264597454586968,
+        "ci95": [
+          0.20999767537204844,
+          0.2435935525370598
+        ],
+        "positive_fraction": 0.9590643274853801
+      },
+      "margin_drop": {
+        "mean": 1.8034727325847124,
+        "ci95": [
+          1.6815431989353693,
+          1.9259116148396709
+        ],
+        "positive_fraction": 0.9576023391812866
+      },
+      "abs_reg_change": {
+        "mean": 0.16122550580940584,
+        "ci95": [
+          0.14499806977502291,
+          0.17775281455938136
+        ],
+        "positive_fraction": 0.9078947368421053
+      }
+    },
+    "donor": {
+      "probability_drop": {
+        "mean": 0.11186349933940551,
+        "ci95": [
+          0.0987307020377003,
+          0.1256119584317469
+        ],
+        "positive_fraction": 0.8114035087719298
+      },
+      "margin_drop": {
+        "mean": 0.949055792049679,
+        "ci95": [
+          0.8510123839465035,
+          1.0517182095947453
+        ],
+        "positive_fraction": 0.8201754385964912
+      },
+      "abs_reg_change": {
+        "mean": 0.05295896130373663,
+        "ci95": [
+          0.04244980653861949,
+          0.06385248696526573
+        ],
+        "positive_fraction": 0.6491228070175439
+      }
+    }
+  }
+}

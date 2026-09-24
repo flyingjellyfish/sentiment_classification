@@ -1,0 +1,10 @@
+{
+  "n_samples": 30,
+  "n_models": 2,
+  "n_seeds": 3,
+  "n_rows": 180,
+  "text_feature": "local BERT from supplied text_bert only",
+  "observed_mask": "supplied [UNK] and zero feature rows; no new corruption",
+  "label_available": false,
+  "not_used_for_model_selection": true
+}

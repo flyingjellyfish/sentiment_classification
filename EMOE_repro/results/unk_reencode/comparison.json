@@ -1,0 +1,142 @@
+[
+  {
+    "scenario": "clean",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.0,
+    "accuracy": 0.6401098901098901,
+    "f1_macro": 0.6026802793337559,
+    "mae": 0.5945274233818054,
+    "pearson": 0.6431154549256786
+  },
+  {
+    "scenario": "clean",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.0,
+    "accuracy": 0.6414835164835165,
+    "f1_macro": 0.5845266990871713,
+    "mae": 0.5989304184913635,
+    "pearson": 0.6406338728834147
+  },
+  {
+    "scenario": "text_start_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.592032967032967,
+    "f1_macro": 0.5327647236483181,
+    "mae": 0.6407102942466736,
+    "pearson": 0.5813622211541593
+  },
+  {
+    "scenario": "text_start_30pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.5934065934065934,
+    "f1_macro": 0.5123066583219434,
+    "mae": 0.646221399307251,
+    "pearson": 0.5772406049196072
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.603021978021978,
+    "f1_macro": 0.5604417468516506,
+    "mae": 0.6302716732025146,
+    "pearson": 0.5829275038625086
+  },
+  {
+    "scenario": "text_middle_30pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.5975274725274725,
+    "f1_macro": 0.5041956571221502,
+    "mae": 0.6306300759315491,
+    "pearson": 0.5940310532237602
+  },
+  {
+    "scenario": "text_end_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.5892857142857143,
+    "f1_macro": 0.5491252426391063,
+    "mae": 0.6422678232192993,
+    "pearson": 0.5726234963395893
+  },
+  {
+    "scenario": "text_end_30pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.2996156533892383,
+    "accuracy": 0.5975274725274725,
+    "f1_macro": 0.5175952689507222,
+    "mae": 0.6524918079376221,
+    "pearson": 0.586283263793027
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.49953412532028885,
+    "accuracy": 0.5357142857142857,
+    "f1_macro": 0.48685272174633876,
+    "mae": 0.670356035232544,
+    "pearson": 0.5096693739053554
+  },
+  {
+    "scenario": "text_middle_50pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.49953412532028885,
+    "accuracy": 0.5631868131868132,
+    "f1_macro": 0.4570862786383918,
+    "mae": 0.6676501035690308,
+    "pearson": 0.5394383425201421
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.2939281000077646,
+    "accuracy": 0.5961538461538461,
+    "f1_macro": 0.5540018805052639,
+    "mae": 0.628616988658905,
+    "pearson": 0.5821874981854341
+  },
+  {
+    "scenario": "all_three_middle_30pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.2939281000077646,
+    "accuracy": 0.5989010989010989,
+    "f1_macro": 0.5072679894677966,
+    "mae": 0.6304042339324951,
+    "pearson": 0.5970660190939402
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 1111,
+    "method": "baseline",
+    "actual_new_missing_fraction": 0.4898866371612703,
+    "accuracy": 0.5384615384615384,
+    "f1_macro": 0.49579361024861335,
+    "mae": 0.6723223924636841,
+    "pearson": 0.5069136492424143
+  },
+  {
+    "scenario": "all_three_middle_50pct",
+    "seed": 1111,
+    "method": "reencode_train",
+    "actual_new_missing_fraction": 0.4898866371612703,
+    "accuracy": 0.5673076923076923,
+    "f1_macro": 0.46137546757806,
+    "mae": 0.6658019423484802,
+    "pearson": 0.5504073691325889
+  }
+]

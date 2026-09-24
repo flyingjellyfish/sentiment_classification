@@ -1,0 +1,323 @@
+{
+  "n_attachment3": 30,
+  "matched_unique": 4,
+  "unmatched": 26,
+  "text_exact_unique": 1,
+  "text_wildcard_unique": 4,
+  "rows": [
+    {
+      "file": "附件3_01.pkl",
+      "length": 8,
+      "matching_source_count": 1,
+      "text_exact_matches": [
+        {
+          "split": "test",
+          "id": "221153$_$16"
+        }
+      ],
+      "text_wildcard_matches": [
+        {
+          "split": "test",
+          "id": "221153$_$16",
+          "new_unk_count": 0
+        }
+      ],
+      "matches": [
+        {
+          "split": "test",
+          "id": "221153$_$16",
+          "token_different_content_slots": 0,
+          "new_unk_from_original_nonunk": 0,
+          "original_unk_content_slots": 0,
+          "original_token_ids_on_unk_slots": []
+        }
+      ]
+    },
+    {
+      "file": "附件3_02.pkl",
+      "length": 30,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_03.pkl",
+      "length": 34,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_04.pkl",
+      "length": 33,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_05.pkl",
+      "length": 14,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_06.pkl",
+      "length": 27,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_07.pkl",
+      "length": 23,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_08.pkl",
+      "length": 17,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_09.pkl",
+      "length": 16,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_10.pkl",
+      "length": 8,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_11.pkl",
+      "length": 16,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_12.pkl",
+      "length": 15,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_13.pkl",
+      "length": 21,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_14.pkl",
+      "length": 25,
+      "matching_source_count": 1,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [
+        {
+          "split": "test",
+          "id": "EO_5o9Gup6g$_$10",
+          "new_unk_count": 2
+        }
+      ],
+      "matches": [
+        {
+          "split": "test",
+          "id": "EO_5o9Gup6g$_$10",
+          "token_different_content_slots": 2,
+          "new_unk_from_original_nonunk": 2,
+          "original_unk_content_slots": 0,
+          "original_token_ids_on_unk_slots": [
+            1996,
+            2925
+          ]
+        }
+      ]
+    },
+    {
+      "file": "附件3_15.pkl",
+      "length": 29,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_16.pkl",
+      "length": 36,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_17.pkl",
+      "length": 24,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_18.pkl",
+      "length": 19,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_19.pkl",
+      "length": 26,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_20.pkl",
+      "length": 50,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_21.pkl",
+      "length": 11,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_22.pkl",
+      "length": 19,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_23.pkl",
+      "length": 15,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_24.pkl",
+      "length": 10,
+      "matching_source_count": 1,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [
+        {
+          "split": "test",
+          "id": "zhNksSReaQk$_$27",
+          "new_unk_count": 2
+        }
+      ],
+      "matches": [
+        {
+          "split": "test",
+          "id": "zhNksSReaQk$_$27",
+          "token_different_content_slots": 2,
+          "new_unk_from_original_nonunk": 2,
+          "original_unk_content_slots": 0,
+          "original_token_ids_on_unk_slots": [
+            2027,
+            26264
+          ]
+        }
+      ]
+    },
+    {
+      "file": "附件3_25.pkl",
+      "length": 11,
+      "matching_source_count": 1,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [
+        {
+          "split": "test",
+          "id": "194299$_$14",
+          "new_unk_count": 2
+        }
+      ],
+      "matches": [
+        {
+          "split": "test",
+          "id": "194299$_$14",
+          "token_different_content_slots": 2,
+          "new_unk_from_original_nonunk": 2,
+          "original_unk_content_slots": 0,
+          "original_token_ids_on_unk_slots": [
+            2061,
+            2054
+          ]
+        }
+      ]
+    },
+    {
+      "file": "附件3_26.pkl",
+      "length": 24,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_27.pkl",
+      "length": 23,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_28.pkl",
+      "length": 35,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_29.pkl",
+      "length": 20,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    },
+    {
+      "file": "附件3_30.pkl",
+      "length": 26,
+      "matching_source_count": 0,
+      "text_exact_matches": [],
+      "text_wildcard_matches": [],
+      "matches": []
+    }
+  ]
+}

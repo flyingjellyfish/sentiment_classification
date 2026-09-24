@@ -14,8 +14,11 @@ EMOE_repro/hf_cache/
 # Downloaded upstream P-RMF code is fetched at a pinned revision.
 EMOE_repro/P_RMF_upstream/
 
-# Raw outputs include checkpoints and per-sample contest predictions.
-EMOE_repro/results/
+# Keep reproducible metrics, per-sample predictions, logs, and figures in Git.
+# Model weights and derived feature archives remain local.
+EMOE_repro/results/**/mpl_cache/
+EMOE_repro/results/matplotlib_cache/
+EMOE_repro/results/**/*.npz
 *.pt
 *.pth
 *.ckpt

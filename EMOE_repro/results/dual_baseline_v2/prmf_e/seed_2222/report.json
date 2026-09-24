@@ -1,0 +1,205 @@
+{
+  "model": "prmf_e",
+  "seed": 2222,
+  "feature_version": "aligned_50",
+  "n_train": 3395,
+  "n_valid": 728,
+  "input_dims_TAV": [
+    [
+      50,
+      768
+    ],
+    [
+      50,
+      74
+    ],
+    [
+      50,
+      35
+    ]
+  ],
+  "augmentation": "same precomputed per-sample contiguous span: chance=.8, one span, rate U(.15,.5), seven modality combinations including all-three",
+  "selection": "clean_F1+AV30_F1+.25*(clean_P+AV30_P)-.25*(clean_MAE+AV30_MAE)",
+  "optimizer": "AdamW",
+  "lr": 0.0001,
+  "weight_decay": 0.0001,
+  "batch_size": 16,
+  "epochs": 8,
+  "amp": true,
+  "parameters_total": 7740036,
+  "best_epoch": 7,
+  "train_seconds": 135.8751770999952,
+  "total_wall_seconds": 171.77129570000398,
+  "peak_cuda_allocated_mib": 257.2880859375,
+  "peak_cuda_reserved_mib": 276.0,
+  "inference_seconds_728_median": 0.7249235999915982,
+  "inference_samples_per_second": 1004.2437575607105,
+  "actual_new_missing_fraction_av30": 0.2910843233170277,
+  "valid_clean": {
+    "model": "prmf_e",
+    "seed": 2222,
+    "scenario": "clean",
+    "actual_new_missing_fraction": 0.0,
+    "accuracy": 0.635989010989011,
+    "f1_macro": 0.6101606195901552,
+    "mae": 0.6110560894012451,
+    "pearson": 0.6265382507720574
+  },
+  "valid_av_middle30": {
+    "model": "prmf_e",
+    "seed": 2222,
+    "scenario": "audio_vision_middle_30pct",
+    "actual_new_missing_fraction": 0.2910843233170277,
+    "accuracy": 0.6318681318681318,
+    "f1_macro": 0.6103723941557518,
+    "mae": 0.6042670011520386,
+    "pearson": 0.628771529999317
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 2.3923128776147333,
+      "train_seconds": 17.28523540000606,
+      "valid_clean": {
+        "accuracy": 0.6002747252747253,
+        "f1_macro": 0.4711721364284405,
+        "mae": 0.6616446375846863,
+        "pearson": 0.5817606880794639
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.5989010989010989,
+        "f1_macro": 0.4786571012160998,
+        "mae": 0.6630212068557739,
+        "pearson": 0.5823751816605093
+      },
+      "selection": 0.9096967439694186
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.675365769247494,
+      "train_seconds": 17.017188400001032,
+      "valid_clean": {
+        "accuracy": 0.5686813186813187,
+        "f1_macro": 0.5321062557177707,
+        "mae": 0.6400619149208069,
+        "pearson": 0.5885970199831833
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.5618131868131868,
+        "f1_macro": 0.5263873665408192,
+        "mae": 0.6395828127861023,
+        "pearson": 0.588887941228673
+      },
+      "selection": 1.0329536806348267
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.5512939196237376,
+      "train_seconds": 16.77702660000068,
+      "valid_clean": {
+        "accuracy": 0.6112637362637363,
+        "f1_macro": 0.5084062182861845,
+        "mae": 0.6677899956703186,
+        "pearson": 0.6054858722581106
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.6098901098901099,
+        "f1_macro": 0.5066365990075911,
+        "mae": 0.6593640446662903,
+        "pearson": 0.608701967094436
+      },
+      "selection": 0.98680126704776
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.4673709259346617,
+      "train_seconds": 17.015538699997705,
+      "valid_clean": {
+        "accuracy": 0.6153846153846154,
+        "f1_macro": 0.5922435307500912,
+        "mae": 0.6096847057342529,
+        "pearson": 0.6327684654274203
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.603021978021978,
+        "f1_macro": 0.5800884788486854,
+        "mae": 0.601027250289917,
+        "pearson": 0.6358326913226446
+      },
+      "selection": 1.1868043097802503
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.4157150107929963,
+      "train_seconds": 17.034092900008545,
+      "valid_clean": {
+        "accuracy": 0.6373626373626373,
+        "f1_macro": 0.5738172158640187,
+        "mae": 0.6083804965019226,
+        "pearson": 0.6265292235634367
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.635989010989011,
+        "f1_macro": 0.5772697749519685,
+        "mae": 0.6005643010139465,
+        "pearson": 0.6290935098916215
+      },
+      "selection": 1.1627564748007846
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.3737115728463365,
+      "train_seconds": 16.888497299994924,
+      "valid_clean": {
+        "accuracy": 0.5989010989010989,
+        "f1_macro": 0.5392457544942207,
+        "mae": 0.6039835214614868,
+        "pearson": 0.612892415283251
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.5934065934065934,
+        "f1_macro": 0.5369600347612223,
+        "mae": 0.6035608053207397,
+        "pearson": 0.6155718318993388
+      },
+      "selection": 1.0814357693555339
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.3553064683793297,
+      "train_seconds": 16.753997299994808,
+      "valid_clean": {
+        "accuracy": 0.635989010989011,
+        "f1_macro": 0.6101606195901552,
+        "mae": 0.6110560894012451,
+        "pearson": 0.6265382507720574
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.6318681318681318,
+        "f1_macro": 0.6103723941557518,
+        "mae": 0.6042670011520386,
+        "pearson": 0.628771529999317
+      },
+      "selection": 1.2305296863004298
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.3225077838405197,
+      "train_seconds": 17.103600499991444,
+      "valid_clean": {
+        "accuracy": 0.6057692307692307,
+        "f1_macro": 0.5624952074227436,
+        "mae": 0.6122226715087891,
+        "pearson": 0.6235891574003568
+      },
+      "valid_av_middle30": {
+        "accuracy": 0.6098901098901099,
+        "f1_macro": 0.5702756876514982,
+        "mae": 0.6098273992538452,
+        "pearson": 0.6235537339852069
+      },
+      "selection": 1.139044100229974
+    }
+  ],
+  "checkpoint": "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\dual_baseline_v2\\prmf_e\\seed_2222\\best.pt"
+}

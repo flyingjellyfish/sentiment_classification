@@ -1,0 +1,59 @@
+{
+  "source_commit": "c4759c748105e18354cd9082b1d8c6d310f1f9d8",
+  "device": "NVIDIA GeForce RTX 5060 Ti",
+  "torch": "2.10.0+cu128",
+  "cuda_runtime": "12.8",
+  "data": "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\E题数据\\附件2-数据集特征文件\\aligned_50.pkl",
+  "train_samples": 256,
+  "valid_samples": 128,
+  "epochs": 2,
+  "batch_size": 8,
+  "router_hidden": 256,
+  "use_bert": false,
+  "amp": true,
+  "model_parameters": 22528755,
+  "peak_cuda_allocated_mib": 445.4,
+  "peak_cuda_reserved_mib": 498.0,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.7401883620768785,
+      "validation": {
+        "mae": 0.777321457862854,
+        "pearson": 0.2570188289688475,
+        "mean_router_weights_LVA": [
+          0.43254759907722473,
+          0.29815027117729187,
+          0.26930221915245056
+        ]
+      },
+      "last_batch_loss_parts": {
+        "multi_mae": 1.2916983366012573,
+        "uni_mae": 1.1688838005065918,
+        "router_entropy": -3.1669254302978516,
+        "router_similarity": 0.04674120247364044,
+        "distillation": 2.063366991933435e-06
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.3780023027211428,
+      "validation": {
+        "mae": 0.6673076748847961,
+        "pearson": 0.3580671839386877,
+        "mean_router_weights_LVA": [
+          0.3601226210594177,
+          0.31817933917045593,
+          0.3216981589794159
+        ]
+      },
+      "last_batch_loss_parts": {
+        "multi_mae": 1.1305923461914062,
+        "uni_mae": 1.1353347301483154,
+        "router_entropy": -3.263848304748535,
+        "router_similarity": 0.036979541182518005,
+        "distillation": 2.040825165749993e-06
+      }
+    }
+  ]
+}

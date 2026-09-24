@@ -1,0 +1,95 @@
+{
+  "count": 728,
+  "clean": {
+    "accuracy": 0.6085164835164835,
+    "f1_macro": 0.5826626864102699,
+    "mae": 0.6287022233009338,
+    "pearson": 0.6088014081411248
+  },
+  "top3_masked": {
+    "accuracy": 0.5631868131868132,
+    "f1_macro": 0.5434777419110848,
+    "mae": 0.6454877257347107,
+    "pearson": 0.5608806723326041
+  },
+  "random3_masked_each_repeat": [
+    {
+      "accuracy": 0.6057692307692307,
+      "f1_macro": 0.5804735360935224,
+      "mae": 0.6299020051956177,
+      "pearson": 0.6078497663013114
+    },
+    {
+      "accuracy": 0.5961538461538461,
+      "f1_macro": 0.5715957263677154,
+      "mae": 0.6332040429115295,
+      "pearson": 0.603697391918965
+    },
+    {
+      "accuracy": 0.6057692307692307,
+      "f1_macro": 0.5808695199100288,
+      "mae": 0.6271702647209167,
+      "pearson": 0.6124672607424262
+    }
+  ],
+  "clean_confusion_matrix": [
+    [
+      119,
+      39,
+      48
+    ],
+    [
+      31,
+      82,
+      71
+    ],
+    [
+      39,
+      57,
+      242
+    ]
+  ],
+  "router_mean_LVA": [
+    0.4201362609890105,
+    0.3386819560439559,
+    0.24118180494505467
+  ],
+  "ablation_mean_predicted_class_probability_drop_LVA": [
+    0.07674000549450549,
+    0.036952239010989055,
+    0.07208059752747246
+  ],
+  "ablation_positive_support_fraction_LVA": [
+    0.6689560439560439,
+    0.6112637362637363,
+    0.6936813186813187
+  ],
+  "router_dominant_equals_max_ablation_fraction": 0.35027472527472525,
+  "unavailable_modality_counts": {
+    "Text": 0,
+    "Vision": 15,
+    "Audio": 0
+  },
+  "faithfulness": {
+    "top3_mean_probability_drop": 0.22772665321826935,
+    "random3_mean_probability_drop": 0.0127114187926054,
+    "paired_difference_mean": 0.2150152176618576,
+    "paired_difference_bootstrap95": [
+      0.19935816302895545,
+      0.23183567225933074
+    ],
+    "fraction_top3_exceeds_random3": 0.9285714285714286,
+    "top3_mean_abs_reg_change": 0.227995365858078,
+    "random3_mean_abs_reg_change": 0.073876291513443
+  },
+  "interpretation_limits": [
+    "Router weights are learned fusion allocations, not causal contribution percentages.",
+    "Window explanations measure response to this model's missing-token intervention.",
+    "Top windows are selected using single-window perturbations; combined top3 vs random3 is an additional faithfulness check.",
+    "Only attachment 4 has matching videos; its seconds/frames use uniform interpolation of token-aligned slots and are approximate."
+  ],
+  "checkpoint": "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\q2\\refined\\full.pt",
+  "attachment4_count": 20,
+  "window_width_slots": 4,
+  "random_repeats": 3
+}

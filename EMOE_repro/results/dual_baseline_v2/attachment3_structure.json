@@ -1,0 +1,309 @@
+{
+  "count": 30,
+  "text_unk_samples": 27,
+  "audio_zero_samples": 27,
+  "vision_zero_samples": 27,
+  "all_three_exactly_same_samples": 29,
+  "rows": [
+    {
+      "file": "附件3_01.pkl",
+      "length": 8,
+      "text_unk_content_slots": 0,
+      "audio_zero_content_slots": 0,
+      "vision_zero_content_slots": 0,
+      "all_three_missing_slots": 0,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_02.pkl",
+      "length": 30,
+      "text_unk_content_slots": 5,
+      "audio_zero_content_slots": 5,
+      "vision_zero_content_slots": 5,
+      "all_three_missing_slots": 5,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_03.pkl",
+      "length": 34,
+      "text_unk_content_slots": 5,
+      "audio_zero_content_slots": 5,
+      "vision_zero_content_slots": 9,
+      "all_three_missing_slots": 5,
+      "all_three_exactly_same": false,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_04.pkl",
+      "length": 33,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_05.pkl",
+      "length": 14,
+      "text_unk_content_slots": 0,
+      "audio_zero_content_slots": 0,
+      "vision_zero_content_slots": 0,
+      "all_three_missing_slots": 0,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_06.pkl",
+      "length": 27,
+      "text_unk_content_slots": 3,
+      "audio_zero_content_slots": 3,
+      "vision_zero_content_slots": 3,
+      "all_three_missing_slots": 3,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_07.pkl",
+      "length": 23,
+      "text_unk_content_slots": 3,
+      "audio_zero_content_slots": 3,
+      "vision_zero_content_slots": 3,
+      "all_three_missing_slots": 3,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_08.pkl",
+      "length": 17,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_09.pkl",
+      "length": 16,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_10.pkl",
+      "length": 8,
+      "text_unk_content_slots": 0,
+      "audio_zero_content_slots": 0,
+      "vision_zero_content_slots": 0,
+      "all_three_missing_slots": 0,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_11.pkl",
+      "length": 16,
+      "text_unk_content_slots": 4,
+      "audio_zero_content_slots": 4,
+      "vision_zero_content_slots": 4,
+      "all_three_missing_slots": 4,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_12.pkl",
+      "length": 15,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_13.pkl",
+      "length": 21,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_14.pkl",
+      "length": 25,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_15.pkl",
+      "length": 29,
+      "text_unk_content_slots": 3,
+      "audio_zero_content_slots": 3,
+      "vision_zero_content_slots": 3,
+      "all_three_missing_slots": 3,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_16.pkl",
+      "length": 36,
+      "text_unk_content_slots": 4,
+      "audio_zero_content_slots": 4,
+      "vision_zero_content_slots": 4,
+      "all_three_missing_slots": 4,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_17.pkl",
+      "length": 24,
+      "text_unk_content_slots": 8,
+      "audio_zero_content_slots": 8,
+      "vision_zero_content_slots": 8,
+      "all_three_missing_slots": 8,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_18.pkl",
+      "length": 19,
+      "text_unk_content_slots": 3,
+      "audio_zero_content_slots": 3,
+      "vision_zero_content_slots": 3,
+      "all_three_missing_slots": 3,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_19.pkl",
+      "length": 26,
+      "text_unk_content_slots": 7,
+      "audio_zero_content_slots": 7,
+      "vision_zero_content_slots": 7,
+      "all_three_missing_slots": 7,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_20.pkl",
+      "length": 50,
+      "text_unk_content_slots": 14,
+      "audio_zero_content_slots": 14,
+      "vision_zero_content_slots": 14,
+      "all_three_missing_slots": 14,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_21.pkl",
+      "length": 11,
+      "text_unk_content_slots": 3,
+      "audio_zero_content_slots": 3,
+      "vision_zero_content_slots": 3,
+      "all_three_missing_slots": 3,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_22.pkl",
+      "length": 19,
+      "text_unk_content_slots": 4,
+      "audio_zero_content_slots": 4,
+      "vision_zero_content_slots": 4,
+      "all_three_missing_slots": 4,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_23.pkl",
+      "length": 15,
+      "text_unk_content_slots": 4,
+      "audio_zero_content_slots": 4,
+      "vision_zero_content_slots": 4,
+      "all_three_missing_slots": 4,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_24.pkl",
+      "length": 10,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_25.pkl",
+      "length": 11,
+      "text_unk_content_slots": 2,
+      "audio_zero_content_slots": 2,
+      "vision_zero_content_slots": 2,
+      "all_three_missing_slots": 2,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_26.pkl",
+      "length": 24,
+      "text_unk_content_slots": 6,
+      "audio_zero_content_slots": 6,
+      "vision_zero_content_slots": 6,
+      "all_three_missing_slots": 6,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_27.pkl",
+      "length": 23,
+      "text_unk_content_slots": 8,
+      "audio_zero_content_slots": 8,
+      "vision_zero_content_slots": 8,
+      "all_three_missing_slots": 8,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_28.pkl",
+      "length": 35,
+      "text_unk_content_slots": 11,
+      "audio_zero_content_slots": 11,
+      "vision_zero_content_slots": 11,
+      "all_three_missing_slots": 11,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_29.pkl",
+      "length": 20,
+      "text_unk_content_slots": 8,
+      "audio_zero_content_slots": 8,
+      "vision_zero_content_slots": 8,
+      "all_three_missing_slots": 8,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    },
+    {
+      "file": "附件3_30.pkl",
+      "length": 26,
+      "text_unk_content_slots": 12,
+      "audio_zero_content_slots": 12,
+      "vision_zero_content_slots": 12,
+      "all_three_missing_slots": 12,
+      "all_three_exactly_same": true,
+      "has_precomputed_text": false
+    }
+  ]
+}
