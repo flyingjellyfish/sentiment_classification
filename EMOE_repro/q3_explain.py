@@ -161,9 +161,13 @@ def location(window, length, duration=None, frames=None):
 
 def explain_batch(model, features, lengths, base, clean_prob, clean_reg, offsets,
                   ids, raw_text, device, width, repeats, rng, variant_batch,
-                  durations=None, frames=None):
+                  durations=None, frames=None, pred_override=None,
+                  include_window_distribution=False):
     count = len(ids)
-    pred = clean_prob.argmax(axis=1)
+    pred = (clean_prob.argmax(axis=1) if pred_override is None else
+            np.asarray(pred_override, dtype=np.int64))
+    if pred.shape != (count,):
+        raise ValueError("pred_override must have one label per sample")
     candidate = []
     for i in range(count):
         for modality in range(3):
@@ -214,6 +218,14 @@ def explain_batch(model, features, lengths, base, clean_prob, clean_reg, offsets
         for modality, name in enumerate(MODALITIES):
             evidence = chosen[modality]
             prefix = name.lower()
+            if include_window_distribution:
+                details[f"{prefix}_windows_json"] = json.dumps([
+                    {"slot_start": int(option["window"][0]),
+                     "slot_end_inclusive": int(option["window"][1] - 1),
+                     "probability_drop": round(option["prob_drop"], 6),
+                     "regression_signed_change": round(option["reg_signed_change"], 6),
+                     "importance": round(option["impact"], 6)}
+                    for option in by_sample[i][modality]], ensure_ascii=False)
             details[f"{prefix}_observed_content_slots"] = int(base[i, modality, 1:int(lengths[i]) - 1].sum().item())
             loc = location(None if evidence is None else evidence["window"], int(lengths[i]),
                            None if durations is None else float(durations[i]),

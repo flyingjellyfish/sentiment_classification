@@ -1,17 +1,17 @@
-# 本目录的实验产物
+# 正式模型与结果索引
 
-本目录版本化保存本地已跑出的 **CSV、JSON、PNG 和训练日志**，供论文图表和复核使用。所有指标都来自题方附件 2 的指定划分；附件 3/4 无标签，只能查看预测输出，不能计算其准确率。文件名中的 `test` 专指附件 2 已有标签的 `test` 划分。
+正式模型为 dual_baseline_v2/prmf_e 下 seed_1111、seed_2222、seed_3333 的 best.pt，各约 29.8 MiB。Q2 与 Q3 使用同一组三种子权重。其他候选权重不纳入本次仓库交付。
 
-| 目录 | 内容 | 结果状态 |
-|---|---|---|
-| `dual_baseline_v2/` | EMOE 与 P-RMF-E 三种子、26 场景、公平双基线汇总、逐样本错误、可视化图、附件 3 逐模型预测 | 历史正式基线；文字缺失为**后置 BERT 特征遮挡** |
-| `prmf_innovation/` | missing embedding、coverage 和一致性消融的训练报告及 25 场景结果 | 已完成消融，未晋升 |
-| `unk_reencode/` | 文字先置 `[UNK]`、冻结 BERT 重编码后的协议诊断、轻量候选、三种子完整网格及一次附件 2 test 比较 | 新协议 Q2 主实验；中性加权仅在严重文字缺失专项场景有稳定收益 |
-| `q3/` | 附件 4 20 条预测和解释、valid 扰动验证、独立 donor/置零对照及图 | Q3 冻结 EMOE 的现有解释结果 |
-| `q2/`、`dual_baseline/`、`innovation/` | 早期 EMOE、受控台及历史输出 | 供追溯；不要与上方新协议结果混用 |
-| `q2_masked_attention/`、`q2_joint_head/` | 后续结构改进的 seed 1111 训练与配对场景筛查 | **单种子探索性负结果**；不构成正式 3 seed 消融 |
-| `q2_local_recovery/` | 局部恢复模块的首次 seed 1111 训练日志 | 初始参数随机数链与基线未对齐，尚无完整配对评价；**不能作为消融结论** |
+| 路径 | 用途 |
+|---|---|
+| dual_baseline_v2/summary.json、slice_report.json、scenario_mean.csv | Q2 双基线、缺失类型/率/位置/时长汇总 |
+| dual_baseline_v2/prmf_e/seed_*/report.json、scenario_grid.csv | 正式 P-RMF-E 的逐种子训练选择与 26 场景指标 |
+| dual_baseline_v2/sample_predictions.csv、failure_cases_seed1111.csv | 验证集逐样本预测与错误案例 |
+| dual_baseline_v2/missing_rate_curves.png、missing_position_curves.png | Q2 缺失率和位置曲线 |
+| dual_baseline_v2/attachment3_unlabeled_predictions.csv | 附件 3 全量 30 条 × 双基线 × 三种子的原始推理记录；正式集成使用其中 P-RMF-E 三种子 |
+| dual_baseline_v2/attachment3_prmf_e_ensemble.csv | 附件 3 正式 P-RMF-E 集成的每样本一行预测，共 30 行 |
+| q3_prmf_e/validation_explanation_report.json、validation_explanations.csv | Q3 同模型 Clean valid 四指标、模态和时间解释 |
+| q3_prmf_e/attachment4_summary.csv、attachment4_predictions_explanations.csv、attachment4_window_importance.csv | 附件 4 全量 20 条预测、贡献和证据 |
+| q3_prmf_e/validation_explanation_summary.png、cards/*.png | Q3 汇总和典型样本解释图 |
 
-同一场景下，旧协议 `M⊙B(u)` 与新协议 `M⊙B(C(u))` 的缺失指标不可直接相减来声称模型涨分。新协议中原 P-RMF-E 和候选才在**同一**输入条件下配对。详细说明见 [Q2 新协议实验报告](../../docs/Q2_UNK重编码与padding增量实验_20260924.md)与[论文手精简版](../../docs/Q2_Q3_论文手精简版.md)。
-
-没有纳入 Git 的内容：题方原始附件、下载的 BERT/上游源码缓存、`*.pt`/`*.pth`/`*.ckpt` 模型权重、`*.npz` 派生特征和绘图库缓存。这些文件有较大体积或包含可从题方附件恢复的原始特征；本目录保存的表和图足以核对报告指标，重跑训练需按照仓库根目录 README 准备本地附件和预训练模型。
+附件 2 valid 是有标签评估集；附件 3/4 没有标签，不能据其 CSV 计算 Accuracy/F1。Text 缺失的 [UNK] 重编码协议和旧后置 BERT 特征遮挡协议不能混比。正式集成的 Clean valid Acc/F1/MAE/Pearson 为 .6580/.6289/.5873/.6419，25 场景新协议均值为 .6283/.5937/.6043/.6179。详见[实验汇总](../../docs/实验尝试与后续工作.md)。

@@ -40,7 +40,9 @@ class PRMFE(nn.Module):
     def __init__(self, cfg=None, *, missing_embedding=False, coverage_gate=False,
                  zero_padding=False, split_text_head=False,
                  masked_attention=False, coupled_head=False,
-                 local_recovery=False):
+                 local_recovery=False, attention_pool=False,
+                 unshared_cross=False, nonlinear_cls=False,
+                 detach_cls_residual=False):
         super().__init__()
         cfg = prmf_config() if cfg is None else cfg
         self.cfg = cfg
@@ -51,6 +53,10 @@ class PRMFE(nn.Module):
         self.masked_attention = masked_attention
         self.coupled_head = coupled_head
         self.local_recovery = local_recovery
+        self.attention_pool = attention_pool
+        self.unshared_cross = unshared_cross
+        self.nonlinear_cls = nonlinear_cls
+        self.detach_cls_residual = detach_cls_residual
         if masked_attention and local_recovery:
             raise ValueError("masked_attention and local_recovery are separate ablations")
         feature = cfg["model"]["feature_extractor"]
@@ -111,9 +117,32 @@ class PRMFE(nn.Module):
                 nn.Conv1d(hidden, 3 * hidden, kernel_size=1))
             nn.init.zeros_(self.local_recovery_net[-1].weight)
             nn.init.zeros_(self.local_recovery_net[-1].bias)
+        if attention_pool:
+            # A zero-init residual to uniform token pooling: the initial
+            # forward exactly matches mean pooling while training can learn
+            # which of the eight fused proxy tokens to emphasize.
+            self.pool_score = nn.Linear(cross["embed_dim"], 1)
+            nn.init.zeros_(self.pool_score.weight)
+            nn.init.zeros_(self.pool_score.bias)
+        if unshared_cross:
+            # The upstream encoder appends the *same* layer four times. Start
+            # four independent copies at identical weights, so step-zero
+            # outputs match the shared implementation exactly.
+            original = self.crossmodal_encoder.encoderlayer
+            self.crossmodal_encoder.layers = nn.ModuleList(
+                deepcopy(original) for _ in range(self.crossmodal_encoder.num_layers))
+            del self.crossmodal_encoder.encoderlayer
+        if nonlinear_cls:
+            self.cls_residual = nn.Sequential(
+                nn.Linear(regression["input_dim"], regression["input_dim"]),
+                nn.GELU(),
+                nn.Dropout(0.1),
+                nn.Linear(regression["input_dim"], 3))
+            nn.init.zeros_(self.cls_residual[-1].weight)
+            nn.init.zeros_(self.cls_residual[-1].bias)
 
     def forward(self, text, audio, vision, observed_mask, complete_for_aux=False,
-                valid_lengths=None, complete_text=None):
+                valid_lengths=None, complete_text=None, return_features=False):
         if text.ndim != 3 or tuple(text.shape[1:]) != (50, 768):
             raise ValueError("Text must be B×50×768 aligned continuous features")
         if audio.shape != (len(text), 50, 74) or vision.shape != (len(text), 50, 35):
@@ -250,9 +279,16 @@ class PRMFE(nn.Module):
             weights = torch.softmax(weights.float().clamp_min(1e-8).log() + correction, dim=0)
             weights = weights.to(proxy.dtype)
         fused = self.crossmodal_encoder(self.GRL(proxy), h_l, h_a, h_v, weights)
-        summary = fused.mean(dim=1)
+        if self.attention_pool:
+            pool_weights = torch.softmax(self.pool_score(fused).float(), dim=1)
+            summary = (fused * pool_weights.to(fused.dtype)).sum(dim=1)
+        else:
+            summary = fused.mean(dim=1)
         regression = self.fc2(self.dropout(F.relu(self.fc1(summary))))
         cls_logits = self.cls_head(summary)
+        if self.nonlinear_cls:
+            cls_logits = cls_logits + self.cls_residual(
+                summary.detach() if self.detach_cls_residual else summary)
         if self.coupled_head:
             valence = torch.cat((regression, regression.abs()), dim=1)
             cls_logits = cls_logits + self.cls_from_reg(valence)
@@ -271,8 +307,13 @@ class PRMFE(nn.Module):
             r_l = self.reconstructor[2](h_l)[:, :8]
             reconstruction = torch.cat([r_a, r_v, r_l], dim=1)
             target = torch.cat([c_a, c_v, c_l], dim=1)
-        return {"cls_logits": cls_logits, "logits_c": regression,
-                "kl_loss": kl_loss, "rec_feats": reconstruction,
-                "complete_feats": target, "uncertainty_weights_LVA": weights,
-                "coverage_beta": self.coverage_beta if self.use_coverage_gate else None,
-                "local_rec_loss": local_rec_loss}
+        result = {"cls_logits": cls_logits, "logits_c": regression,
+                  "kl_loss": kl_loss, "rec_feats": reconstruction,
+                  "complete_feats": target, "uncertainty_weights_LVA": weights,
+                  "coverage_beta": self.coverage_beta if self.use_coverage_gate else None,
+                  "local_rec_loss": local_rec_loss}
+        if return_features:
+            result["fused_summary"] = summary
+            result["unimodal_summary_LVA"] = torch.cat(
+                (h_l.mean(dim=1), h_v.mean(dim=1), h_a.mean(dim=1)), dim=1)
+        return result

@@ -1,0 +1,115 @@
+{
+  "count": 728,
+  "clean": {
+    "accuracy": 0.657967032967033,
+    "f1_macro": 0.6288734683652636,
+    "mae": 0.5872734785079956,
+    "pearson": 0.6418529463491482
+  },
+  "confusion_matrix": [
+    [
+      154,
+      23,
+      29
+    ],
+    [
+      32,
+      75,
+      77
+    ],
+    [
+      46,
+      42,
+      250
+    ]
+  ],
+  "class_recall": {
+    "Negative": 0.7475728155339806,
+    "Neutral": 0.4076086956521739,
+    "Positive": 0.7396449704142012
+  },
+  "proxy_weight_mean_LVA": [
+    0.33063349175824197,
+    0.33289663736263764,
+    0.3364698763736267
+  ],
+  "ablation_predicted_class_probability_drop_mean_LVA": [
+    0.10916213873626372,
+    0.014967037087912086,
+    0.021171696428571418
+  ],
+  "proxy_dominant_equals_max_ablation_fraction": 0.19230769230769232,
+  "undetermined_main_reference_count": 1,
+  "unavailable_modality_counts": {
+    "Text": 0,
+    "Vision": 15,
+    "Audio": 0
+  },
+  "faithfulness": {
+    "selected_mean_probability_drop": 0.04173864796757698,
+    "random_mean_probability_drop": 0.009316935203969479,
+    "paired_selected_minus_random": {
+      "mean": 0.03242170939651819,
+      "ci95": [
+        0.030463250039227223,
+        0.03441928358349417
+      ],
+      "positive_fraction": 0.9642857142857143
+    },
+    "selected_mean_abs_intensity_change": 0.10820304602384567,
+    "random_mean_abs_intensity_change": 0.050584953278303146
+  },
+  "interpretation_limits": [
+    "Proxy weights are internal uncertainty-based fusion allocations, not causal contributions.",
+    "Main reference uses signed whole-modality ablation; None means no reliable positive drop.",
+    "Selected windows use the same zero-mask intervention as selection; donor replacement is checked separately.",
+    "Audio/video seconds and frames are uniform-slot approximations, not source timestamps."
+  ],
+  "model": "P-RMF-E",
+  "checkpoint_seeds": [
+    1111,
+    2222,
+    3333
+  ],
+  "checkpoints": [
+    "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\dual_baseline_v2\\prmf_e\\seed_1111\\best.pt",
+    "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\dual_baseline_v2\\prmf_e\\seed_2222\\best.pt",
+    "D:\\work\\math\\huaweicup\\第二十三届中国研究生数学建模竞赛 - 中文题目\\中文题目\\E题\\EMOE_repro\\results\\dual_baseline_v2\\prmf_e\\seed_3333\\best.pt"
+  ],
+  "classification_aggregation": "Q2 deterministic majority vote, ties by mean probability",
+  "regression_aggregation": "mean of clipped seed intensities",
+  "explanation_probability": "mean of seed class probabilities",
+  "attachment4_count": 20,
+  "attachment4_labeled": false,
+  "window_width_slots": 4,
+  "random_repeats": 3,
+  "independent_donor_check": {
+    "eligible": 687,
+    "validation_count": 728,
+    "no_matched_alternative_by_modality": {
+      "Text": 59,
+      "Vision": 76,
+      "Audio": 46
+    },
+    "intervention": "same-predicted-class, similar-length donor feature replacement",
+    "observed_mask_unchanged": true,
+    "target": "probability of the original Q2 majority-vote class",
+    "paired_top_minus_random_probability_drop": {
+      "mean": 0.028743300241886895,
+      "ci95": [
+        0.026032495484173624,
+        0.0314804810162828
+      ],
+      "positive_fraction": 0.8369723435225619
+    },
+    "paired_top_minus_random_abs_intensity_change": {
+      "mean": 0.015287329266905198,
+      "ci95": [
+        0.010067958013210318,
+        0.021051759431842718
+      ],
+      "positive_fraction": 0.537117903930131
+    },
+    "limitation": "Donor feature replacement changes content and may create out-of-distribution combinations; it is a sensitivity check, not semantic ground truth."
+  }
+}
